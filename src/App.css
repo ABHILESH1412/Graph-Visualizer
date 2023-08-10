@@ -4,18 +4,3 @@
   justify-content: center;
   height: 100vh;
 }
-
-.divRef div{
-  display: inline-block;
-  /* width: 1rem; */
-  background-color: blanchedalmond;
-  margin: 0.5rem;
-  padding: 0.1rem 0.5rem;
-  border-radius: 0.2rem;
-  text-align: center;
-}
-
-.svgRef{
-  width: 90vw;
-  height: 90vh;
-}
