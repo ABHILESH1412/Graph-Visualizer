@@ -1,0 +1,91 @@
+.sidebar{
+  width: 30rem;
+  height: 95%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.sidebar-heading{
+  font-size: 5rem;
+  font-weight: 500;
+  text-align: center;
+  border-bottom: 0.2rem solid grey;
+  padding: 1rem 0rem 2rem 0rem;
+  color: white;
+}
+
+.input-inst-btn{
+  font-size: 2rem;
+  margin-top: 2rem;
+  padding: 1rem;
+  border-radius: 2rem;
+  border: none;
+  cursor: pointer;
+  background-color: rgb(74, 141, 250);
+  color: white;
+}
+
+.input-inst-btn:hover{
+  background-color: rgb(129, 175, 248);
+}
+
+.userInput{
+  border: none;
+  margin-top: 2rem;
+  resize: none;
+  font-size: 1.8rem;
+  font-weight: 600;
+  padding: 1rem;
+  border-radius: 1rem;
+  background-color: rgba(148, 148, 148, 0.438);
+  color: white;
+}
+
+.userInput:focus{
+  outline: 0.2rem solid white;
+}
+
+.sidebarWar{
+  font-size: 2rem;
+  color: red;
+  margin: 1rem 0rem;
+}
+
+.plotGraph{
+  font-size: 2rem;
+  margin-top: 2rem;
+  padding: 1rem;
+  border-radius: 2rem;
+  border: none;
+  cursor: pointer;
+  background-color: rgb(74, 141, 250);
+  color: white;
+}
+
+.plotGraph:hover{
+  background-color: rgb(129, 175, 248);
+}
+
+.sidebarSelect{
+  height: 4rem;
+  font-size: 1.7rem;
+  text-align: center;
+  border-radius: 1rem;
+  margin-top: 1rem;
+  border: none;
+  color: white;
+  border: 0.1rem solid white;
+  background-color: black;
+}
+
+.sidebarSelectOptions{
+  font-size: 1.7rem;
+  background-color: black;
+}
+
+.nodesIndexingPara{
+  color: white;
+  font-size: 1.7rem;
+  margin-top: 1rem;
+}

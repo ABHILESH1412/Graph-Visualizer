@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import Graph from './componenets/Graph';
+import Sidebar from './componenets/Sidebar';
 
 import './App.css';
 
 function App() {
-  const graph = {
+  const [graph, setGraph] = useState({
     nodes: [
       {
         id: 0
@@ -31,33 +32,51 @@ function App() {
     ],
     links: [
       {
-        source: 0,
-        target: 1
+        source: 1,
+        target: 2
       },
       {
-        source: 2,
-        target: 4
+        source: 3,
+        target: 5
+      },
+      {
+        source: 4,
+        target: 2
+      },
+      {
+        source: 5,
+        target: 1
       },
       {
         source: 3,
         target: 1
       },
-      {
-        source: 4,
-        target: 0
-      },
-      {
-        source: 2,
-        target: 0
-      },
     ]
-  }
+  });
+  const [graphType, setGraphType] = useState('undirectedGraph');
 
   return (
     <div className="App">
-      <Graph graph = {graph}/>
+      <Sidebar setGraph = {setGraph} setGraphType = {setGraphType}/>
+      <Graph graph = {graph} graphType = {graphType}/>
     </div>
   );
 }
 
 export default App;
+
+
+//dummy data
+// 7 5
+// 4 2
+// 2 0
+// 4 0
+// 0 1
+// 1 3
+
+// 7 5
+// 5 3
+// 3 1
+// 5 1
+// 1 2
+// 2 4

@@ -4,29 +4,27 @@ import * as d3 from 'd3';
 import './Graph.css';
 
 export default function Graph(props) {
-  // const graph = props.graph;
   const svgRef = useRef();
   const nodeColor = 'red';
   const nodeRadius = 25;
   const edgeColor = 'orange';
-  const edgeWidth = 10;
-  const edgeDistance = 100;
-  const canvasColor = '#D3D3D3';
+  const edgeWidth = 7;
+  const edgeDistance = 120;
   const forceStrength = -50;
   const collideForce = nodeRadius+5;
-  const fontSize = 24;
 
   //Function which will draw the graph on the SVG Canvas
   const draw = async () => {
     const width = svgRef.current.clientWidth;
     const height = svgRef.current.clientHeight;
-    let cvs = d3.select(svgRef.current).style('background', canvasColor);
+    let cvs = d3.select(svgRef.current);
+    d3.select(svgRef.current).selectAll('*').remove();
 
     let simulation = d3
       .forceSimulation(props.graph.nodes)
       .force('charge', d3.forceManyBody().strength(forceStrength))
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('link', d3.forceLink(props.graph.links).distance(edgeDistance))
+      .force('link', d3.forceLink(props.graph.links).id(d => d.id).distance(edgeDistance))
       .force("collide", d3.forceCollide(collideForce))
       .on('tick', ticked);
 
@@ -54,14 +52,43 @@ export default function Graph(props) {
       .on('end', (event, d) => dragended(event, d));
 
     //Edges of the Graph
-    let links = cvs
-      .append('g')
-      .selectAll('line')
-      .data(props.graph.links)
-      .enter()
-      .append('line')
-      .attr('stroke-width', edgeWidth)
-      .attr('stroke', edgeColor);
+    let links;
+
+    if(props.graphType === 'directedGraph'){
+      // Pointing Arrows
+      cvs.append('defs')
+        .append('marker')
+        .attr('id', 'arrow-marker')
+        .attr('viewBox', '0 -5 10 10')
+        .attr('refX', 17.5) // Shift arrowhead along the line
+        .attr('markerWidth', 4)
+        .attr('markerHeight', 6)
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('d', 'M0,-5L10,0L0,5') // Arrowhead path
+        .attr('fill', edgeColor); // Use the edge color
+
+      links = cvs
+        .append('g')
+        .selectAll('.link')
+        .data(props.graph.links)
+        .enter()
+        .append('line')
+        .attr('class', 'link') 
+        .attr('stroke-width', edgeWidth)
+        .attr('stroke', edgeColor)
+        .attr('marker-end', 'url(#arrow-marker)');
+    }else{
+      links = cvs
+        .append('g')
+        .selectAll('.link')
+        .data(props.graph.links)
+        .enter()
+        .append('line')
+        .attr('class', 'link') 
+        .attr('stroke-width', edgeWidth)
+        .attr('stroke', edgeColor)
+    }
 
     //Nodes of the Graph
     let nodes = cvs
@@ -82,12 +109,12 @@ export default function Graph(props) {
       .enter()
       .append('text')
       .text(d => d.id)
-      .attr('font-size', fontSize)
       .style('font-weight', 'bold')
       .attr('fill', 'white')
       .attr('text-anchor', 'middle')
       .attr('dy', 10)
-      .attr('cursor', 'default');
+      .attr('cursor', 'default')
+      .attr('class', 'graphTexts');
     
     texts.call(drag);
 
@@ -128,16 +155,14 @@ export default function Graph(props) {
       });
 
     cvs.call(zoom);
-
-    cvs.exit().remove();
   }
 
   useEffect(() => {
     draw();
-  }, [props.graph]);
+  }, [props.graph, props.graphType]);
 
   return (
-    <div>
+    <div className='graphContainer'>
       <svg ref={svgRef} className='svgRef'></svg>
     </div>
   )
