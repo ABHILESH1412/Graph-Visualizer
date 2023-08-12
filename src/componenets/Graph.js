@@ -9,7 +9,7 @@ export default function Graph(props) {
   const nodeRadius = 25;
   const edgeColor = 'orange';
   const edgeWidth = 7;
-  const edgeDistance = 120;
+  const edgeDistance = 160;
   const forceStrength = -50;
   const collideForce = nodeRadius+5;
 
@@ -52,7 +52,18 @@ export default function Graph(props) {
       .on('end', (event, d) => dragended(event, d));
 
     //Edges of the Graph
-    let links;
+    let links = cvs
+      .append('g')
+      .selectAll('.link')
+      .data(props.graph.links)
+      .enter()
+      .append('line')
+      .attr('class', 'link') 
+      .attr('stroke-width', edgeWidth)
+      .attr('stroke', edgeColor)
+      .attr('id', (d) => {
+        return 'edge-' + d.source.id + d.target.id;
+      })
 
     if(props.graphType === 'directedGraph'){
       // Pointing Arrows
@@ -68,26 +79,8 @@ export default function Graph(props) {
         .attr('d', 'M0,-5L10,0L0,5') // Arrowhead path
         .attr('fill', edgeColor); // Use the edge color
 
-      links = cvs
-        .append('g')
-        .selectAll('.link')
-        .data(props.graph.links)
-        .enter()
-        .append('line')
-        .attr('class', 'link') 
-        .attr('stroke-width', edgeWidth)
-        .attr('stroke', edgeColor)
-        .attr('marker-end', 'url(#arrow-marker)');
-    }else{
-      links = cvs
-        .append('g')
-        .selectAll('.link')
-        .data(props.graph.links)
-        .enter()
-        .append('line')
-        .attr('class', 'link') 
-        .attr('stroke-width', edgeWidth)
-        .attr('stroke', edgeColor)
+      //adding pointing arrows to the edges
+      links.attr('marker-end', 'url(#arrow-marker)');
     }
 
     //Nodes of the Graph
@@ -98,10 +91,14 @@ export default function Graph(props) {
       .enter()
       .append('circle')
       .attr('r', nodeRadius)
-      .attr('fill', nodeColor);
+      .attr('fill', nodeColor)
+      .attr('id', (d) => {
+        return 'node-' + d.id;
+      });
 
     nodes.call(drag);
-
+    
+    //this code is written by THREE
     //Numbering on the Nodes
     let texts = cvs.append('g')
       .selectAll('text')
@@ -114,7 +111,10 @@ export default function Graph(props) {
       .attr('text-anchor', 'middle')
       .attr('dy', 10)
       .attr('cursor', 'default')
-      .attr('class', 'graphTexts');
+      .attr('class', 'graphTexts')
+      .attr('id', (d) => {
+        return 'node-text-' + d.id;
+      })
     
     texts.call(drag);
 

@@ -10,13 +10,13 @@ export default function Sidebar(props) {
 links:
 Source Node - Target Node
 ----------------
-example: 
+Example: 
 7 5
-5 3
-3 1
-5 1
 1 2
-2 4`
+3 5
+4 2
+5 1
+3 1`;
 
   const graphTypeChange = (event) => {
     props.setGraphType(event.target.value);
@@ -57,9 +57,11 @@ example:
     return parseInt(s);
   }
 
+  //this code is written by THREE
+
   const plotGraphBtn = () => {
+    //removing unnecessary spaces and new lines.
     const cleanedString = GraphValues.trim().replace(/\s+/g, ' ');
-    let flag = true;
     let totalNodes = 0;
     let totalEdges = 0;
     let graphData = {
@@ -97,19 +99,26 @@ example:
       let target = helper(i, cleanedString);
       if(isNaN(source) || isNaN(target) || source >= totalNodes || source < nodesIndexing || target >= totalNodes || target < nodesIndexing){
         setError(2);
-        flag = false;
-        break;
+        return;
       }
       graphData.links.push({source: source, target: target})
     }
 
-    if(flag){
-      if(graphData.links.length !== totalEdges){
-        setError(2);
-      }else{
-        props.setGraph(graphData);
-      }
+    if(graphData.links.length !== totalEdges){
+      setError(2);
+    }else{
+      props.setGraph(graphData);
     }
+  }
+
+  // const temp = () => {
+  //   document.querySelector('#node-5').style.fill = '#32976A';
+  //   document.querySelector('#edge-35').style.stroke = '#F2F1F1';
+
+  // }
+
+  const algoSimulationChange = (event) => {
+    props.setAlgoSimulation(event.target.value);
   }
 
   return (
@@ -117,20 +126,38 @@ example:
       <div className='sidebar-heading'>
         <p>Graph Visualizer</p>
       </div>
-      {/* <button className='input-inst-btn' onClick={instBtn}>Input Instructions</button> */}
       <select name="graphType" className='sidebarSelect' onChange={graphTypeChange}>
         <option value="undirectedGraph" className='sidebarSelectOptions'>Undirected Graph</option>
         <option value="directedGraph" className='sidebarSelectOptions'>Directed Graph</option>
       </select>
+
       <p className='nodesIndexingPara'>Nodes Indexing: </p>
+
       <select name="nodesIndexing" className='sidebarSelect' onChange={nodesIndexingChange}>
         <option value="0" className='sidebarSelectOptions'>0</option>
         <option value="1" className='sidebarSelectOptions'>1</option>
       </select>
+
       <textarea name='userInput' className='userInput' cols='30' rows='12' placeholder = {userInputPlaceholder} value={GraphValues} onChange={userInput}></textarea>
+      
       {error === 1 && <p className='sidebarWar'>* You can only enter integers</p>}
+
       {error === 2 && <p className='sidebarWar'>* Invalid Nodes or Connecting Edges</p>}
+
       <button className = 'plotGraph' onClick={plotGraphBtn} title='ctrl+enter'>Plot Graph</button>
+
+      <select name="algoSimulation" className='sidebarSelect' onChange={algoSimulationChange}>
+        <option value="none" className='sidebarSelectOptions'>Algorithm Simulation</option>
+        <option value="dfs" className='sidebarSelectOptions'>Depth First Search (DFS)</option>
+        <option value="bfs" className='sidebarSelectOptions'>Breadth First Search (BFS)</option>
+      </select>
+
+      {props.algoSimulation !== 'none' && <p className='nodesIndexingPara'>Starting Node:</p>}
+      {props.algoSimulation !== 'none' && <textarea name="startingNode" cols="30" rows="1" className='userInput'></textarea>}
+
+      {props.algoSimulation !== 'none' && <button className='algo-simulation-run-btn'>Run Simulation</button>}
+
+      {/* <button className='temp' onClick={temp}>Click Me</button> */}
     </div>
   )
 }

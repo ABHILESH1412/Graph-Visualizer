@@ -54,11 +54,13 @@ function App() {
     ]
   });
   const [graphType, setGraphType] = useState('undirectedGraph');
+  const [algoSimulation, setAlgoSimulation] = useState('none');
 
   return (
     <div className="App">
-      <Sidebar setGraph = {setGraph} setGraphType = {setGraphType}/>
+      <Sidebar setGraph = {setGraph} setGraphType = {setGraphType} algoSimulation = {algoSimulation} setAlgoSimulation = {setAlgoSimulation}/>
       <Graph graph = {graph} graphType = {graphType}/>
+      {algoSimulation !== 'none' && <div className='output'> hello</div>}
     </div>
   );
 }
