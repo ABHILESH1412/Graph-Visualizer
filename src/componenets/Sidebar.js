@@ -123,9 +123,11 @@ Example:
     algorithms(props.graphType, props.algoSimulation, props.graph, nodesIndexing, startingNode, setDisableFunctions);
   }
 
-  // const temp = () => {
-  //   console.log(disableFunctions);
-  // }
+  const temp = () => {
+    const edgeId = 'edge-12'; // Replace with your specific edge's id
+    const newArrowColor = 'red';
+    console.log(document.getElementById(edgeId));
+  }
 
   const startingNodeChange = (event) => {
     setStartingNode(event.target.value);
@@ -167,7 +169,7 @@ Example:
 
       {props.algoSimulation !== 'none' && <button className = {disableFunctions ? 'btn-disabled' : 'primary-btn'} onClick={algoSimulationRunBtn} disabled={disableFunctions}>Run Simulation</button>}
 
-      {/* <button className='primary-btn' onClick={temp}>Click Me</button> */}
+      <button className='primary-btn' onClick={temp}>Click Me</button>
     </div>
   )
 }

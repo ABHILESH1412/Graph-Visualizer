@@ -66,21 +66,41 @@ export default function Graph(props) {
       })
 
     if(props.graphType === 'directedGraph'){
-      // Pointing Arrows
-      cvs.append('defs')
-        .append('marker')
-        .attr('id', 'arrow-marker')
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 18.5) // Shift arrowhead along the line
-        .attr('markerWidth', 4)
-        .attr('markerHeight', 6)
-        .attr('orient', 'auto')
-        .append('path')
-        .attr('d', 'M0,-5L10,0L0,5') // Arrowhead path
-        .attr('fill', edgeColor); // Use the edge color
+      // // Pointing Arrows
+      // cvs.append('defs')
+      //   .append('marker')
+        // .attr('id', 'arrow-marker')
+        // .attr('viewBox', '0 -5 10 10')
+        // .attr('refX', 18.5) // Shift arrowhead along the line
+        // .attr('markerWidth', 4)
+        // .attr('markerHeight', 6)
+        // .attr('orient', 'auto')
+      //   .append('path')
+      //   .attr('d', 'M0,-5L10,0L0,5') // Arrowhead path
+      //   .attr('fill', edgeColor); // Use the edge color
 
-      //adding pointing arrows to the edges
-      links.attr('marker-end', 'url(#arrow-marker)');
+      // //adding pointing arrows to the edges
+      // links.attr('marker-end', 'url(#arrow-marker)');
+
+      links
+        .attr('marker-end', (d, i) => {
+          const arrowId = 'arrow-' + d.source.id + '-' + d.target.id; // Unique arrow ID
+          // Define the arrow marker for each edge
+          cvs.append('defs').append('marker')
+            .attr('id', arrowId)
+            .attr('viewBox', '0 -5 10 10')
+            .attr('refX', 18.5) // Shift arrowhead along the line
+            .attr('markerWidth', 4)
+            .attr('markerHeight', 6)
+            .attr('orient', 'auto')
+            .append('path')
+            .attr('id', () => {
+              return `arrow-${d.source.id}${d.target.id}`;
+            })
+            .attr('fill', 'orange')
+            .attr('d', 'M0,-5L10,0L0,5'); // Path of the arrowhead shape
+          return 'url(#' + arrowId + ')';
+        });
     }
 
     //Nodes of the Graph

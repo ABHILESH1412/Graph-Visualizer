@@ -113,7 +113,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
             document.querySelector(`#edge-${frontNode}${q.front().second}`).style.stroke = lineColor;
           }
           document.querySelector(`#node-${frontNode}`).style.fill = nodeColor;
-          
+          //this code is written by THREE
           vis[frontNode] = true;
     
           for (let i = 0; i < adj[frontNode].length; i++) {
@@ -176,19 +176,9 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         }
         setDisableFunctions(false);
       }
-    
+      //this code is written by THREE
       performDFS(); // Start DFS traversal
     }
-
-    // if(algoSimulation === 'dfs'){
-    //   dfsHelper(startingNode);
-    //   for (let i = nodesIndexing; i < size; i++) {
-    //     if (vis[i] === false) {
-    //       dfsHelper(i); // Use await to wait for the completion of dfsHelper
-    //     }
-    //   }
-    //   setDisableFunctions(false);
-    // }
   }else{
     // Making Adjecency List
     for(let i = 0; i < data.links.length; i++){
@@ -197,9 +187,51 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       adj[sourceId].push(targetId);
     }
 
-    if(algoSimulation == 'bfs'){
-
+    async function bfsHelper(node) {
+      const q = new Queue();
+      q.enqueue(new Pair(node, -1));
+    
+      async function processQueue() {
+        while (!q.isEmpty()) {
+          const frontNode = q.front().first;
+          
+          if (document.querySelector(`#edge-${q.front().second}${frontNode}`)) {
+            document.querySelector(`#edge-${q.front().second}${frontNode}`).style.stroke = lineColor;
+          }
+          if (document.getElementById(`arrow-${q.front().second}${frontNode}`)){
+            document.getElementById(`arrow-${q.front().second}${frontNode}`).style.fill = 'white';
+          }
+          document.querySelector(`#node-${frontNode}`).style.fill = nodeColor;
+          //this code is written by THREE
+          vis[frontNode] = true;
+    
+          for (let i = 0; i < adj[frontNode].length; i++) {
+            if (!vis[adj[frontNode][i]]) {
+              q.enqueue(new Pair(adj[frontNode][i], frontNode));
+            }
+          }
+    
+          q.dequeue();
+          await new Promise(resolve => setTimeout(resolve, 500)); // Wait for 0.5 second
+        }
+      }
+    
+      await processQueue(); // Start processing
     }
-    console.log('directedGraph', adj);
+
+    if(algoSimulation == 'bfs'){
+      async function performBFS() {
+        await bfsHelper(startingNode);
+        // for (let i = nodesIndexing; i < size; i++) {
+        //   if (vis[i] === false) {
+        //     await bfsHelper(i); // Use await to wait for the completion of bfsHelper
+        //   }
+        // }//THREE
+        setDisableFunctions(false);
+      }
+    
+      performBFS();
+    }
+    // console.log('directedGraph', adj);
   }
 }
