@@ -129,6 +129,28 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
     
       await processQueue(); // Start processing
     }
+
+    async function dfsHelper(node, prev){
+      if(vis[node] === true){
+        return;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+      vis[node] = true;
+      if (document.querySelector(`#edge-${prev}${node}`)) {
+        document.querySelector(`#edge-${prev}${node}`).style.stroke = lineColor;
+      }
+      if (document.querySelector(`#edge-${node}${prev}`)) {
+        document.querySelector(`#edge-${node}${prev}`).style.stroke = lineColor;
+      }
+      document.querySelector(`#node-${node}`).style.fill = nodeColor;
+
+      for(let i = 0; i < adj[node].length; i++){
+        await dfsHelper(adj[node][i], node);
+      }
+
+      // await new Promise(resolve => setTimeout(resolve, 500));
+    }
     
     if (algoSimulation === 'bfs') {
       async function performBFS() {
@@ -144,7 +166,29 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       performBFS(); // Start BFS traversal
     }
     
+    if(algoSimulation === 'dfs'){
+      async function performDFS() {
+        await dfsHelper(startingNode);
+        for (let i = nodesIndexing; i < size; i++) {
+          if (vis[i] === false) {
+            await dfsHelper(i); // Use await to wait for the completion of dfsHelper
+          }
+        }
+        setDisableFunctions(false);
+      }
     
+      performDFS(); // Start DFS traversal
+    }
+
+    // if(algoSimulation === 'dfs'){
+    //   dfsHelper(startingNode);
+    //   for (let i = nodesIndexing; i < size; i++) {
+    //     if (vis[i] === false) {
+    //       dfsHelper(i); // Use await to wait for the completion of dfsHelper
+    //     }
+    //   }
+    //   setDisableFunctions(false);
+    // }
   }else{
     // Making Adjecency List
     for(let i = 0; i < data.links.length; i++){
