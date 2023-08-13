@@ -8,7 +8,7 @@ export default function Graph(props) {
   const nodeColor = 'red';
   const nodeRadius = 25;
   const edgeColor = 'orange';
-  const edgeWidth = 7;
+  const edgeWidth = 6;
   const edgeDistance = 160;
   const forceStrength = -50;
   const collideForce = nodeRadius+5;
@@ -71,7 +71,7 @@ export default function Graph(props) {
         .append('marker')
         .attr('id', 'arrow-marker')
         .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 17.5) // Shift arrowhead along the line
+        .attr('refX', 18.5) // Shift arrowhead along the line
         .attr('markerWidth', 4)
         .attr('markerHeight', 6)
         .attr('orient', 'auto')
@@ -111,7 +111,7 @@ export default function Graph(props) {
       .attr('text-anchor', 'middle')
       .attr('dy', 10)
       .attr('cursor', 'default')
-      .attr('class', 'graphTexts')
+      .attr('class', 'ft-sz-3')
       .attr('id', (d) => {
         return 'node-text-' + d.id;
       })

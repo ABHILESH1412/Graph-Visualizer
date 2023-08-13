@@ -1,0 +1,75 @@
+.ft-sz-1{
+  font-size: 1.7rem;
+}
+
+.ft-sz-2{
+  font-size: 2rem;
+}
+
+.ft-sz-3{
+  font-size: 2.4rem;
+}
+
+.primary-btn{
+  font-size: 2rem;
+  padding: 1rem;
+  border-radius: 2rem;
+  border: none;
+  cursor: pointer;
+  background-color: rgb(74, 141, 250);
+  color: white;
+  margin: 1rem 0;
+}
+
+.primary-btn:hover{
+  background-color: rgb(119, 170, 251);
+}
+
+.btn-disabled{
+  font-size: 2rem;
+  padding: 1rem;
+  border-radius: 2rem;
+  border: none;
+  margin: 1rem 0;
+  background-color: rgb(75, 75, 75);
+  color: white;
+  cursor: not-allowed;
+  margin: 1rem 0;
+}
+
+.select{
+  height: 4rem;
+  font-size: 1.7rem;
+  text-align: center;
+  border-radius: 1rem;
+  border: none;
+  color: white;
+  border: 0.1rem solid white;
+  background-color: black;
+  margin: 1rem 0rem;
+}
+
+.select option{
+  font-size: 1.7rem;
+  background-color: black;
+}
+
+.text-area{
+  font-size: 1.7rem;
+  border: none;
+  resize: none;
+  font-weight: 600;
+  padding: 1rem;
+  border-radius: 1rem;
+  background-color: rgba(148, 148, 148, 0.438);
+  color: white;
+  margin: 1rem 0rem;
+}
+
+.disabled-cursor{
+  cursor: not-allowed;
+}
+
+.center-text{
+  text-align: center;
+}

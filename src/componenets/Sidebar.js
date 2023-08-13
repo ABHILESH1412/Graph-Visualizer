@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {algorithms} from '../algorithms/algorithms.js';
 
 import './Sidebar.css';
 
@@ -6,6 +7,8 @@ export default function Sidebar(props) {
   const [error, setError] = useState(0); // 0 means no error, 1 means user will be notified that he/she can only put integers, 2 means user will be notified that by the given input drawing the graph is impossible.
   const [GraphValues, setGraphValues] = useState("");
   const [nodesIndexing, setNodesIndexing] = useState(0);
+  const [disableFunctions, setDisableFunctions] = useState(false);
+  const [startingNode, setStartingNode] = useState(0);
   const userInputPlaceholder = `Total Nodes, Total Edges
 links:
 Source Node - Target Node
@@ -111,14 +114,21 @@ Example:
     }
   }
 
-  // const temp = () => {
-  //   document.querySelector('#node-5').style.fill = '#32976A';
-  //   document.querySelector('#edge-35').style.stroke = '#F2F1F1';
-
-  // }
-
   const algoSimulationChange = (event) => {
     props.setAlgoSimulation(event.target.value);
+  }
+
+  const algoSimulationRunBtn = () => {
+    setDisableFunctions(true);
+    algorithms(props.graphType, props.algoSimulation, props.graph, nodesIndexing, startingNode, setDisableFunctions);
+  }
+
+  // const temp = () => {
+  //   console.log(disableFunctions);
+  // }
+
+  const startingNodeChange = (event) => {
+    setStartingNode(event.target.value);
   }
 
   return (
@@ -126,38 +136,38 @@ Example:
       <div className='sidebar-heading'>
         <p>Graph Visualizer</p>
       </div>
-      <select name="graphType" className='sidebarSelect' onChange={graphTypeChange}>
-        <option value="undirectedGraph" className='sidebarSelectOptions'>Undirected Graph</option>
-        <option value="directedGraph" className='sidebarSelectOptions'>Directed Graph</option>
+      <select name="graphType" className = {'select ' + (disableFunctions && 'disabled-cursor')} onChange={graphTypeChange} disabled={disableFunctions}>
+        <option value="undirectedGraph">Undirected Graph</option>
+        <option value="directedGraph">Directed Graph</option>
       </select>
 
-      <p className='nodesIndexingPara'>Nodes Indexing: </p>
+      <p className='nodesIndexingPara ft-sz-1'>Nodes Indexing: </p>
 
-      <select name="nodesIndexing" className='sidebarSelect' onChange={nodesIndexingChange}>
-        <option value="0" className='sidebarSelectOptions'>0</option>
-        <option value="1" className='sidebarSelectOptions'>1</option>
+      <select name="nodesIndexing" className = {'select ' + (disableFunctions && 'disabled-cursor')} onChange={nodesIndexingChange} disabled={disableFunctions}>
+        <option value="0">0</option>
+        <option value="1">1</option>
       </select>
 
-      <textarea name='userInput' className='userInput' cols='30' rows='12' placeholder = {userInputPlaceholder} value={GraphValues} onChange={userInput}></textarea>
+      <textarea name='userInput' className = {'text-area ' + (disableFunctions && 'disabled-cursor')} cols='30' rows='12' placeholder = {userInputPlaceholder} value={GraphValues} onChange={userInput} disabled={disableFunctions}></textarea>
       
-      {error === 1 && <p className='sidebarWar'>* You can only enter integers</p>}
+      {error === 1 && <p className='sidebarWar ft-sz-1'>* You can only enter integers</p>}
 
-      {error === 2 && <p className='sidebarWar'>* Invalid Nodes or Connecting Edges</p>}
+      {error === 2 && <p className='sidebarWar ft-sz-1'>* Invalid Nodes or Connecting Edges</p>}
 
-      <button className = 'plotGraph' onClick={plotGraphBtn} title='ctrl+enter'>Plot Graph</button>
+      <button className = {disableFunctions ? 'btn-disabled' : 'primary-btn'} onClick={plotGraphBtn} title='ctrl+enter' disabled={disableFunctions}>Plot Graph</button>
 
-      <select name="algoSimulation" className='sidebarSelect' onChange={algoSimulationChange}>
-        <option value="none" className='sidebarSelectOptions'>Algorithm Simulation</option>
-        <option value="dfs" className='sidebarSelectOptions'>Depth First Search (DFS)</option>
-        <option value="bfs" className='sidebarSelectOptions'>Breadth First Search (BFS)</option>
+      <select name="algoSimulation" className = {'select ' + (disableFunctions && 'disabled-cursor')} onChange={algoSimulationChange} disabled={disableFunctions}>
+        <option value="none">Algorithm Simulation</option>
+        <option value="dfs">Depth First Search (DFS)</option>
+        <option value="bfs">Breadth First Search (BFS)</option>
       </select>
 
-      {props.algoSimulation !== 'none' && <p className='nodesIndexingPara'>Starting Node:</p>}
-      {props.algoSimulation !== 'none' && <textarea name="startingNode" cols="30" rows="1" className='userInput'></textarea>}
+      {props.algoSimulation !== 'none' && <p className='nodesIndexingPara ft-sz-1'>Starting Node:</p>}
+      {props.algoSimulation !== 'none' && <textarea name="startingNode" cols="30" rows="1" className = {'text-area center-text ' + (disableFunctions && 'disabled-cursor')} disabled={disableFunctions} value = {startingNode} onChange={startingNodeChange}></textarea>}
 
-      {props.algoSimulation !== 'none' && <button className='algo-simulation-run-btn'>Run Simulation</button>}
+      {props.algoSimulation !== 'none' && <button className = {disableFunctions ? 'btn-disabled' : 'primary-btn'} onClick={algoSimulationRunBtn} disabled={disableFunctions}>Run Simulation</button>}
 
-      {/* <button className='temp' onClick={temp}>Click Me</button> */}
+      {/* <button className='primary-btn' onClick={temp}>Click Me</button> */}
     </div>
   )
 }

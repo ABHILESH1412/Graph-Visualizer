@@ -4,6 +4,7 @@ import Graph from './componenets/Graph';
 import Sidebar from './componenets/Sidebar';
 
 import './App.css';
+import './utility.css'
 
 function App() {
   const [graph, setGraph] = useState({
@@ -55,10 +56,11 @@ function App() {
   });
   const [graphType, setGraphType] = useState('undirectedGraph');
   const [algoSimulation, setAlgoSimulation] = useState('none');
+  const [output, setOutput] = useState('');
 
   return (
     <div className="App">
-      <Sidebar setGraph = {setGraph} setGraphType = {setGraphType} algoSimulation = {algoSimulation} setAlgoSimulation = {setAlgoSimulation}/>
+      <Sidebar graph = {graph} setGraph = {setGraph} graphType = {graphType} setGraphType = {setGraphType} algoSimulation = {algoSimulation} setAlgoSimulation = {setAlgoSimulation}/>
       <Graph graph = {graph} graphType = {graphType}/>
       {algoSimulation !== 'none' && <div className='output'> hello</div>}
     </div>

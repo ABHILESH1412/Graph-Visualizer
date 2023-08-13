@@ -4,19 +4,12 @@
   height: 100%;
   display: flex;
   align-items: center;
-  /* padding: 1rem; */
   margin: 1rem;
 }
 
 .svgRef{
-  /* position: absolute; */
   width: 99%;
   height: 96%;
   border-radius: 2rem;
-  /* margin: 2rem; */
   background-color: rgba(148, 148, 148, 0.438);
-}
-
-.graphTexts{
-  font-size: 2.4rem;
 }
