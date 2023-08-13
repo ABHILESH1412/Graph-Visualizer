@@ -143,7 +143,7 @@ Example:
         <option value="directedGraph">Directed Graph</option>
       </select>
 
-      <p className='nodesIndexingPara ft-sz-1'>Nodes Indexing: </p>
+      <p className='white-color ft-sz-1'>Nodes Indexing: </p>
 
       <select name="nodesIndexing" className = {'select ' + (disableFunctions && 'disabled-cursor')} onChange={nodesIndexingChange} disabled={disableFunctions}>
         <option value="0">0</option>
@@ -162,14 +162,18 @@ Example:
         <option value="none">Algorithm Simulation</option>
         <option value="dfs">Depth First Search (DFS)</option>
         <option value="bfs">Breadth First Search (BFS)</option>
+        <option value='bipartiteGraph' disabled = {props.graphType === 'directedGraph' ? true : false}>Bipartite Graph {props.graphType === 'directedGraph' ? '(only for Undirected Graph)' : ''}</option>
+        <option value='topoSort' disabled = {props.graphType === 'undirectedGraph' ? true : false}>Topological Sort {props.graphType === 'undirectedGraph' ? '(only for Directed Graph)' : ''}</option>
       </select>
 
-      {props.algoSimulation !== 'none' && <p className='nodesIndexingPara ft-sz-1'>Starting Node:</p>}
-      {props.algoSimulation !== 'none' && <textarea name="startingNode" cols="30" rows="1" className = {'text-area center-text ' + (disableFunctions && 'disabled-cursor')} disabled={disableFunctions} value = {startingNode} onChange={startingNodeChange}></textarea>}
+      {props.algoSimulation !== 'none' && (props.algoSimulation === 'bfs' || props.algoSimulation === 'dfs') && <p className='white-color ft-sz-1'>Starting Node:</p>}
+      {props.algoSimulation !== 'none' && (props.algoSimulation === 'bfs' || props.algoSimulation === 'dfs') && <textarea name="startingNode" cols="30" rows="1" className = {'text-area center-text ' + (disableFunctions && 'disabled-cursor')} disabled={disableFunctions} value = {startingNode} onChange={startingNodeChange}></textarea>}
+
+      {<p className='ft-sz-1 sidebarWar'>* Enter a Valid Node</p>}
 
       {props.algoSimulation !== 'none' && <button className = {disableFunctions ? 'btn-disabled' : 'primary-btn'} onClick={algoSimulationRunBtn} disabled={disableFunctions}>Run Simulation</button>}
 
-      <button className='primary-btn' onClick={temp}>Click Me</button>
+      {/* <button className='primary-btn' onClick={temp}>Click Me</button>   */}
     </div>
   )
 }

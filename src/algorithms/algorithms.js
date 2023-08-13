@@ -79,8 +79,9 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
   lines.forEach(line => {
     line.style.stroke = 'orange';
   });
+  const waitTime = 1000;
   const lineColor = '#F2F1F1';
-  const nodeColor = '#32976A';
+  const nodeColor = 'rgb(50, 151, 106)';
   const size = data.nodes.length + parseInt(nodesIndexing);
   let adj = new Array(size);
   let vis = Array.from({ length: size }).fill(false);
@@ -123,7 +124,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
           }
     
           q.dequeue();
-          await new Promise(resolve => setTimeout(resolve, 500)); // Wait for 0.5 second
+          await new Promise(resolve => setTimeout(resolve, waitTime));
         }
       }
     
@@ -135,7 +136,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         return;
       }
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, waitTime));
       vis[node] = true;
       if (document.querySelector(`#edge-${prev}${node}`)) {
         document.querySelector(`#edge-${prev}${node}`).style.stroke = lineColor;
@@ -148,36 +149,85 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       for(let i = 0; i < adj[node].length; i++){
         await dfsHelper(adj[node][i], node);
       }
+    }
 
-      // await new Promise(resolve => setTimeout(resolve, 500));
+    async function bipartiteGraphHelper(node, prev, nColor){
+      if(vis[node] === true){
+        if(document.getElementById(`node-${node}`).style.fill !== nColor){
+          if (document.querySelector(`#edge-${prev}${node}`)) {
+            document.querySelector(`#edge-${prev}${node}`).style.stroke = 'red';
+          }
+          if (document.querySelector(`#edge-${node}${prev}`)) {
+            document.querySelector(`#edge-${node}${prev}`).style.stroke = 'red';
+          }
+          return -1;
+        }
+        return 0;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+      vis[node] = true;
+      if (document.querySelector(`#edge-${prev}${node}`)) {
+        document.querySelector(`#edge-${prev}${node}`).style.stroke = lineColor;
+      }
+      if (document.querySelector(`#edge-${node}${prev}`)) {
+        document.querySelector(`#edge-${node}${prev}`).style.stroke = lineColor;
+      }
+      document.querySelector(`#node-${node}`).style.fill = nColor;
+
+      for(let i = 0; i < adj[node].length; i++){
+        const ans = await bipartiteGraphHelper(adj[node][i], node, (nColor === 'rgb(50, 151, 106)' ? 'blue' : 'rgb(50, 151, 106)'));
+        if(ans !== 0){
+          if (ans.length === undefined){
+            return [node, adj[node][i]];
+          }
+          return ans;
+        }
+      }
+
+      return 0;
     }
     
     if (algoSimulation === 'bfs') {
       async function performBFS() {
         await bfsHelper(startingNode);
-        for (let i = nodesIndexing; i < size; i++) {
-          if (vis[i] === false) {
-            await bfsHelper(i); // Use await to wait for the completion of bfsHelper
-          }
-        }
+        // for (let i = nodesIndexing; i < size; i++) {
+        //   if (vis[i] === false) {
+        //     await bfsHelper(i); // Use await to wait for the completion of bfsHelper
+        //   }
+        // }
         setDisableFunctions(false);
       }
     
       performBFS(); // Start BFS traversal
-    }
-    
-    if(algoSimulation === 'dfs'){
+    }else if(algoSimulation === 'dfs'){
       async function performDFS() {
-        await dfsHelper(startingNode);
+        await dfsHelper(startingNode, -1);
+        // for (let i = nodesIndexing; i < size; i++) {
+        //   if (vis[i] === false) {
+        //     await dfsHelper(i, -1); // Use await to wait for the completion of dfsHelper
+        //   }
+        // }
+        setDisableFunctions(false);
+      }
+      //this code is written by THREE
+      performDFS(); // Start DFS traversal
+    }
+    else if(algoSimulation === 'bipartiteGraph'){
+      async function performBipartiteGraph() {
         for (let i = nodesIndexing; i < size; i++) {
           if (vis[i] === false) {
-            await dfsHelper(i); // Use await to wait for the completion of dfsHelper
+            const ans = await bipartiteGraphHelper(i, -1, 'rgb(50, 151, 106)');
+            if(ans.length === 2){
+              console.log(ans[0], ans[1]);
+              break;
+            }
           }
         }
         setDisableFunctions(false);
       }
       //this code is written by THREE
-      performDFS(); // Start DFS traversal
+      performBipartiteGraph();
     }
   }else{
     // Making Adjecency List
@@ -212,7 +262,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
           }
     
           q.dequeue();
-          await new Promise(resolve => setTimeout(resolve, 500)); // Wait for 0.5 second
+          await new Promise(resolve => setTimeout(resolve, waitTime)); // Wait for 0.5 second
         }
       }
     
