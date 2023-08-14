@@ -69,36 +69,42 @@ class Pair {
   }
 }
 
-// function detectCycleHelperUndirectedGraph(node, adj, vis){
-//   const q = new Queue();
-//   q.push(new Pair(node, -1));
-//   vis[node] = true;
-  
-//   while(q.size() > 0){
-//     for(let i = 0; i < adj[q.front().first].length; i++){
-//       if(vis[adj[q.front().first][i]] === false){
-//         q.enqueue(adj[node][i]);
-//         vis[adj[node][i]] = true;
-//       }else if(adj[q.front().first][i] !== q.front().second){
-//         return true;
-//       }
-//     }
-//   }
+function detectCycleDirectedGraph(adj, nodesIndexing){
+  let size = adj.length;
+  let indegree = Array.from({ length: size}).fill(0);
+  for(let i = nodesIndexing; i < size; i++){
+    for(let j = 0; j < adj[i].length; j++){
+      indegree[adj[i][j]]++;
+    }
+  }
+  let anotherIndegree = indegree.slice();
 
-//   return false;
-// }
+  let q = new Queue();
+  for(let i = nodesIndexing; i < size; i++){
+    if(indegree[i] === 0){
+      q.enqueue(i);
+    }
+  }
 
-// function detectCycleUndirectedGraph(adj, nodesIndexing) {
-//   let size = adj.length;
-//   let vis = Array.from({ length: size }).fill(false);
-//   for(let i = nodesIndexing; i < size; i++){
-//     if(vis[i] == false && detectCycleHelperUndirectedGraph(i, adj, vis)){
-//       return true;
-//     }
-//   }
+  while(!q.isEmpty()){
+    for(let i = 0; i < adj[q.front()].length; i++){
+      indegree[adj[q.front()][i]]--;
+      if(indegree[adj[q.front()][i]] == 0){
+        q.enqueue(adj[q.front()][i]);
+      }
+    }
 
-//   return false;
-// }
+    q.dequeue();
+  }
+
+  for(let i = nodesIndexing; i < size; i++){
+    if(indegree[i] != 0){
+      return [true];
+    }
+  }
+
+  return [false, anotherIndegree];
+}
 
 export function algorithms(graphType, algoSimulation, data, nodesIndexing, startingNode, setDisableFunctions) {
   const circles = document.querySelectorAll('svg circle');
@@ -327,6 +333,45 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       }
     }
 
+    async function topoSortHelper(indegree){
+      let s = '';
+      let size = adj.length;
+      let q = new Queue();
+      for(let i = nodesIndexing; i < size; i++){
+        if(indegree[i] === 0){
+          q.enqueue(new Pair(i, -1));
+        }
+      }
+
+      async function processQueue() {
+        while(!q.isEmpty()){
+          const frontNode = q.front().first;
+          
+          if (document.querySelector(`#edge-${q.front().second}${frontNode}`)) {
+            document.querySelector(`#edge-${q.front().second}${frontNode}`).style.stroke = lineColor;
+          }
+          if (document.getElementById(`arrow-${q.front().second}${frontNode}`)){
+            document.getElementById(`arrow-${q.front().second}${frontNode}`).style.fill = 'white';
+          }
+          document.querySelector(`#node-${frontNode}`).style.fill = nodeColor;
+
+          for(let i = 0; i < adj[q.front().first].length; i++){
+            indegree[adj[q.front().first][i]]--;
+            if(indegree[adj[q.front().first][i]] == 0){
+              q.enqueue(new Pair(adj[q.front().first][i], q.front().first));
+            }
+          }
+  
+          s += `${q.front().first} `;
+          q.dequeue();
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+      }
+      
+      await processQueue();
+      return s;
+    }
+
     if(algoSimulation === 'bfs'){
       async function performBFS() {
         await bfsHelper(startingNode);
@@ -351,7 +396,18 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       }
       //this code is written by THREE
       performDFS(); // Start DFS traversal
+    }else if(algoSimulation === 'topoSort'){
+      async function performTopoSort() {
+        const checkCycle = detectCycleDirectedGraph(adj, nodesIndexing);
+        if(checkCycle[0] === true){
+          console.log(`It is not Directed Acyclic Graph (DAG), Can't find the Topological Sort for the given Graph`);
+        }else{
+          console.log(await topoSortHelper(checkCycle[1]));
+        }
+        setDisableFunctions(false);
+      }
+    
+      performTopoSort();
     }
-    // console.log('directedGraph', adj);
   }
 }
