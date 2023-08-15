@@ -28,7 +28,7 @@
 .btn-disabled{
   font-size: 2rem;
   padding: 1rem;
-  border-radius: 2rem;
+  border-radius: 1rem;
   border: none;
   margin: 1rem 0;
   background-color: rgb(75, 75, 75);

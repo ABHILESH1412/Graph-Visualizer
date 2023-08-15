@@ -61,6 +61,16 @@
   background-color: rgb(74, 141, 250);
 }
 
+.speed-btn-disabled{
+  font-size: 2rem;
+  padding: 1rem;
+  border: none;
+  background-color: rgb(75, 75, 75);
+  color: white;
+  cursor: not-allowed;
+  margin: 1rem 0;
+}
+
 .text-area-h1{
   min-height: 24rem;
 }

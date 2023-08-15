@@ -297,9 +297,9 @@ Example:
         {props.algoSimulation !== 'none' && <>
           <p className='ft-sz-1 white-color'>Animation Speed:</p>
           <div className="speedBtnsContainer">
-            <button className={`speed-btn ${animationSpeedBtn === 0 ? 'selected-btn' : ''}`} onClick={speedBtnClicked}>Slow</button>
-            <button className={`speed-btn ${animationSpeedBtn === 1 ? 'selected-btn' : ''}`} onClick={speedBtnClicked}>Normal</button>
-            <button className={`speed-btn ${animationSpeedBtn === 2 ? 'selected-btn' : ''}`} onClick={speedBtnClicked}>Fast</button>
+            <button className={`${disableFunctions ? 'speed-btn-disabled' : 'speed-btn'} ${animationSpeedBtn === 0 ? 'selected-btn' : ''}`} onClick={speedBtnClicked} disabled={disableFunctions}>Slow</button>
+            <button className={`${disableFunctions ? 'speed-btn-disabled' : 'speed-btn'} ${animationSpeedBtn === 1 ? 'selected-btn' : ''}`} onClick={speedBtnClicked} disabled={disableFunctions}>Normal</button>
+            <button className={`${disableFunctions ? 'speed-btn-disabled' : 'speed-btn'} ${animationSpeedBtn === 2 ? 'selected-btn' : ''}`} onClick={speedBtnClicked} disabled={disableFunctions}>Fast</button>
           </div>
           <button className = {disableFunctions ? 'btn-disabled' : 'primary-btn'} onClick={algoSimulationRunBtn} disabled={disableFunctions}>Run Simulation</button>
         </>}
