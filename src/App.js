@@ -56,13 +56,23 @@ function App() {
   });
   const [graphType, setGraphType] = useState('undirectedGraph');
   const [algoSimulation, setAlgoSimulation] = useState('none');
-  const [output, setOutput] = useState('');
+  const [output, setOutput] = useState({
+    heading: '',
+    result: ''
+  });
 
   return (
     <div className="App">
-      <Sidebar graph = {graph} setGraph = {setGraph} graphType = {graphType} setGraphType = {setGraphType} algoSimulation = {algoSimulation} setAlgoSimulation = {setAlgoSimulation}/>
+      <Sidebar graph = {graph} setGraph = {setGraph} graphType = {graphType} setGraphType = {setGraphType} algoSimulation = {algoSimulation} setAlgoSimulation = {setAlgoSimulation} setOutput={setOutput}/>
       <Graph graph = {graph} graphType = {graphType}/>
-      {algoSimulation !== 'none' && <div className='output'> hello</div>}
+      {algoSimulation !== 'none' && <div className='output'> 
+        <div className="output-heading">
+          <p>Output</p>
+        </div>
+        <p className='output-heading1 white-color ft-sz-2'>{output.heading}</p>
+        <br />
+        <p className='white-color ft-sz-1'>{output.result}</p>
+      </div>}
     </div>
   );
 }

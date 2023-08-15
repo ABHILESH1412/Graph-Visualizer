@@ -1,9 +1,17 @@
 .sidebar{
-  width: 30rem;
+  min-width: 32rem;
   height: 95%;
   display: flex;
   flex-direction: column;
   padding: 1rem;
+  overflow: auto;
+  justify-content: space-between;
+  margin-left: 1rem;
+}
+
+.controls{
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-heading{
@@ -19,4 +27,63 @@
 .sidebarWar{
   font-weight: 600;
   color: red;
+}
+
+.speedBtnsContainer{
+  display: flex;
+  justify-content: space-around;
+  border-radius: 1rem;
+  overflow: hidden;
+  min-height: 4.2rem;
+  margin: 1rem 0rem;
+}
+
+.speedBtnsContainer button{
+  width: 100%;
+  margin: 0rem;
+}
+
+.speed-btn{
+  font-size: 2rem;
+  padding: 1rem;
+  border: none;
+  cursor: pointer;
+  background-color: rgb(30, 102, 217);
+  color: white;
+  margin: 1rem 0;
+}
+
+.speed-btn:hover{
+  background-color: rgb(77, 124, 217);
+}
+
+.selected-btn{
+  background-color: rgb(74, 141, 250);
+}
+
+.text-area-h1{
+  min-height: 24rem;
+}
+
+.text-area-h2{
+  min-height: 2rem;
+}
+
+.social-handles{
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0rem;
+}
+
+.social-handles-btn{
+  height: 4.2rem;
+  border-radius: 100%;
+  border: none;
+  overflow: hidden;
+  margin: 0rem 1rem;
+  cursor: pointer;
+}
+
+.btn-img{
+  height: 100%;
 }

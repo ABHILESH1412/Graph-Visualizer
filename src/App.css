@@ -9,8 +9,23 @@
 }
 
 .output{
-  border: 0.1rem solid red;
-  width: 54rem;
-  padding: 1rem;
+  /* border: 0.1rem solid red; */
+  margin-right: 2rem;
+  min-width: 32rem;
+  /* padding: 1rem; */
   height: 95%;
+}
+
+.output-heading{
+  color: White;
+  font-size: 5rem;
+  text-align: center;
+  font-weight: 500;
+  border-bottom: 0.2rem solid grey;
+  padding: 1rem 0rem 1rem 0rem;
+  margin-bottom: 1rem;
+}
+
+.output-heading1{
+  font-weight: 500;
 }

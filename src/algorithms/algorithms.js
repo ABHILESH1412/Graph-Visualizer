@@ -1,34 +1,34 @@
-class Stack {
-  constructor() {
-      this.items = [];
-  }
+// class Stack {
+//   constructor() {
+//       this.items = [];
+//   }
 
-  push(item) {
-      this.items.push(item);
-  }
+//   push(item) {
+//       this.items.push(item);
+//   }
 
-  pop() {
-      if (this.isEmpty()) {
-          return undefined;
-      }
-      return this.items.pop();
-  }
+//   pop() {
+//       if (this.isEmpty()) {
+//           return undefined;
+//       }
+//       return this.items.pop();
+//   }
 
-  top() {
-      if (this.isEmpty()) {
-          return undefined;
-      }
-      return this.items[this.items.length - 1];
-  }
+//   top() {
+//       if (this.isEmpty()) {
+//           return undefined;
+//       }
+//       return this.items[this.items.length - 1];
+//   }
 
-  isEmpty() {
-      return this.items.length === 0;
-  }
+//   isEmpty() {
+//       return this.items.length === 0;
+//   }
 
-  size() {
-      return this.items.length;
-  }
-}
+//   size() {
+//       return this.items.length;
+//   }
+// }
 
 class Queue {
   constructor() {
@@ -89,7 +89,7 @@ function detectCycleDirectedGraph(adj, nodesIndexing){
   while(!q.isEmpty()){
     for(let i = 0; i < adj[q.front()].length; i++){
       indegree[adj[q.front()][i]]--;
-      if(indegree[adj[q.front()][i]] == 0){
+      if(indegree[adj[q.front()][i]] === 0){
         q.enqueue(adj[q.front()][i]);
       }
     }
@@ -98,7 +98,7 @@ function detectCycleDirectedGraph(adj, nodesIndexing){
   }
 
   for(let i = nodesIndexing; i < size; i++){
-    if(indegree[i] != 0){
+    if(indegree[i] !== 0){
       return [true];
     }
   }
@@ -106,7 +106,7 @@ function detectCycleDirectedGraph(adj, nodesIndexing){
   return [false, anotherIndegree];
 }
 
-export function algorithms(graphType, algoSimulation, data, nodesIndexing, startingNode, setDisableFunctions) {
+export function algorithms(graphType, algoSimulation, data, nodesIndexing, startingNode, setDisableFunctions, speed, setOutput) {
   const circles = document.querySelectorAll('svg circle');
   circles.forEach(circle => {
     circle.style.fill = 'red';
@@ -119,7 +119,6 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
   paths.forEach(path => {
     path.style.fill = 'orange';
   })
-  const waitTime = 1000;
   const lineColor = '#F2F1F1';
   const nodeColor = 'rgb(50, 151, 106)';
   const size = data.nodes.length + parseInt(nodesIndexing);
@@ -140,6 +139,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
     }
 
     async function bfsHelper(node) {
+      let BFSOrder = '';
       const q = new Queue();
       q.enqueue(new Pair(node, -1));
       vis[node] = true;
@@ -156,9 +156,12 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
             document.querySelector(`#edge-${frontNode}${q.front().second}`).style.stroke = lineColor;
           }
           document.querySelector(`#node-${frontNode}`).style.fill = nodeColor;
+          BFSOrder += `${frontNode} `;
+          setOutput(prevState => ({
+            ...prevState,
+            result: BFSOrder
+          }));
           //this code is written by THREE
-          // vis[frontNode] = true;
-          // console.log(vis[frontNode]);
     
           for (let i = 0; i < adj[frontNode].length; i++) {
             if (vis[adj[frontNode][i]] === false) {
@@ -168,19 +171,19 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
           }
     
           q.dequeue();
-          await new Promise(resolve => setTimeout(resolve, waitTime));
+          await new Promise(resolve => setTimeout(resolve, speed));
         }
       }
     
       await processQueue(); // Start processing
     }
 
-    async function dfsHelper(node, prev){
+    async function dfsHelper(node, prev, DFSOrder){
       if(vis[node] === true){
         return;
       }
 
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+      await new Promise(resolve => setTimeout(resolve, speed));
       vis[node] = true;
       if (document.querySelector(`#edge-${prev}${node}`)) {
         document.querySelector(`#edge-${prev}${node}`).style.stroke = lineColor;
@@ -189,9 +192,14 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         document.querySelector(`#edge-${node}${prev}`).style.stroke = lineColor;
       }
       document.querySelector(`#node-${node}`).style.fill = nodeColor;
+      DFSOrder.order += `${node} `;
+      setOutput(prevState => ({
+        ...prevState,
+        result: DFSOrder.order
+      }));
 
       for(let i = 0; i < adj[node].length; i++){
-        await dfsHelper(adj[node][i], node);
+        await dfsHelper(adj[node][i], node, DFSOrder);
       }
     }
 
@@ -209,7 +217,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         return 0;
       }
 
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+      await new Promise(resolve => setTimeout(resolve, speed));
       vis[node] = true;
       if (document.querySelector(`#edge-${prev}${node}`)) {
         document.querySelector(`#edge-${prev}${node}`).style.stroke = lineColor;
@@ -233,6 +241,10 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
     }
     
     if (algoSimulation === 'bfs') {
+      setOutput(prevState => ({
+        ...prevState,
+        heading: 'One of the BFS Order:'
+      }));
       async function performBFS() {
         await bfsHelper(startingNode);
         // for (let i = nodesIndexing; i < size; i++) {
@@ -245,8 +257,15 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
     
       performBFS(); // Start BFS traversal
     }else if(algoSimulation === 'dfs'){
+      setOutput(prevState => ({
+        ...prevState,
+        heading: 'One of the DFS Order:'
+      }));
       async function performDFS() {
-        await dfsHelper(startingNode, -1);
+        let DFSOrder = {
+          order: ''
+        };
+        await dfsHelper(startingNode, -1, DFSOrder);
         // for (let i = nodesIndexing; i < size; i++) {
         //   if (vis[i] === false) {
         //     await dfsHelper(i, -1); // Use await to wait for the completion of dfsHelper
@@ -257,16 +276,29 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       //this code is written by THREE
       performDFS(); // Start DFS traversal
     }else if(algoSimulation === 'bipartiteGraph'){
+      let flag = true;
       async function performBipartiteGraph() {
         for (let i = nodesIndexing; i < size; i++) {
           if (vis[i] === false) {
             const ans = await bipartiteGraphHelper(i, -1, 'rgb(50, 151, 106)');
             if(ans.length === 2){
-              console.log(ans[0], ans[1]);
+              setOutput({
+                heading: 'Nope, not a Bipartite Graph',
+                result: `Node ${ans[0]} and Node ${ans[1]} both have same Color`
+              });
+              flag = false;
               break;
             }
           }
         }
+
+        if(flag){
+          setOutput({
+            heading: 'Yes, It is a Bipartite Graph',
+            reslut: ''
+          });
+        }
+        
         setDisableFunctions(false);
       }
       //this code is written by THREE
@@ -281,6 +313,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
     }
 
     async function bfsHelper(node) {
+      let BFSOrder = '';
       const q = new Queue();
       q.enqueue(new Pair(node, -1));
       vis[node] = true;
@@ -296,29 +329,34 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
             document.getElementById(`arrow-${q.front().second}${frontNode}`).style.fill = 'white';
           }
           document.querySelector(`#node-${frontNode}`).style.fill = nodeColor;
+          BFSOrder += `${frontNode} `;
+          setOutput(prevState => ({
+            ...prevState,
+            result: BFSOrder
+          }));
           //this code is written by THREE
     
           for (let i = 0; i < adj[frontNode].length; i++) {
-            if (!vis[adj[frontNode][i]]) {
+            if (vis[adj[frontNode][i]] === false) {
               q.enqueue(new Pair(adj[frontNode][i], frontNode));
-              vis[node] = true;
+              vis[adj[frontNode][i]] = true;
             }
           }
     
           q.dequeue();
-          await new Promise(resolve => setTimeout(resolve, waitTime)); // Wait for 0.5 second
+          await new Promise(resolve => setTimeout(resolve, speed)); // Wait for 0.5 second
         }
       }
     
       await processQueue(); // Start processing
     }
 
-    async function dfsHelper(node, prev){
+    async function dfsHelper(node, prev, DFSOrder){
       if(vis[node] === true){
         return;
       }
 
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+      await new Promise(resolve => setTimeout(resolve, speed));
       vis[node] = true;
       if (document.querySelector(`#edge-${prev}${node}`)) {
         document.querySelector(`#edge-${prev}${node}`).style.stroke = lineColor;
@@ -327,9 +365,14 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         document.getElementById(`arrow-${prev}${node}`).style.fill = 'white';
       }
       document.querySelector(`#node-${node}`).style.fill = nodeColor;
+      DFSOrder.order += `${node} `;
+      setOutput(prevState => ({
+        ...prevState,
+        result: DFSOrder.order
+      }));
 
       for(let i = 0; i < adj[node].length; i++){
-        await dfsHelper(adj[node][i], node);
+        await dfsHelper(adj[node][i], node, DFSOrder);
       }
     }
 
@@ -357,22 +400,29 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
 
           for(let i = 0; i < adj[q.front().first].length; i++){
             indegree[adj[q.front().first][i]]--;
-            if(indegree[adj[q.front().first][i]] == 0){
+            if(indegree[adj[q.front().first][i]] === 0){
               q.enqueue(new Pair(adj[q.front().first][i], q.front().first));
             }
           }
   
           s += `${q.front().first} `;
+          setOutput(prevState => ({
+            ...prevState,
+            result: s
+          }));
           q.dequeue();
-          await new Promise(resolve => setTimeout(resolve, waitTime));
+          await new Promise(resolve => setTimeout(resolve, speed));
         }
       }
       
       await processQueue();
-      return s;
     }
 
     if(algoSimulation === 'bfs'){
+      setOutput(prevState => ({
+        ...prevState,
+        heading: 'One of the BFS Order:'
+      }));
       async function performBFS() {
         await bfsHelper(startingNode);
         // for (let i = nodesIndexing; i < size; i++) {
@@ -385,8 +435,15 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
     
       performBFS();
     }else if(algoSimulation === 'dfs'){
+      setOutput(prevState => ({
+        ...prevState,
+        heading: 'One of the DFS Order:'
+      }));
       async function performDFS() {
-        await dfsHelper(startingNode, -1);
+        let DFSOrder = {
+          order: ''
+        };
+        await dfsHelper(startingNode, -1, DFSOrder);
         // for (let i = nodesIndexing; i < size; i++) {
         //   if (vis[i] === false) {
         //     await dfsHelper(i, -1); // Use await to wait for the completion of dfsHelper
@@ -400,9 +457,18 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       async function performTopoSort() {
         const checkCycle = detectCycleDirectedGraph(adj, nodesIndexing);
         if(checkCycle[0] === true){
+          setOutput({
+            heading: 'It is not Directed Acyclic Graph (DAG)',
+            result: `Can't find the Topological Sort for the given Graph`
+          });
           console.log(`It is not Directed Acyclic Graph (DAG), Can't find the Topological Sort for the given Graph`);
         }else{
-          console.log(await topoSortHelper(checkCycle[1]));
+          setOutput(prevState => ({
+            ...prevState,
+            heading: 'One of the Topological Sort Order:'
+          }));
+          await topoSortHelper(checkCycle[1])
+          // console.log(await topoSortHelper(checkCycle[1]));
         }
         setDisableFunctions(false);
       }

@@ -13,16 +13,16 @@
 .primary-btn{
   font-size: 2rem;
   padding: 1rem;
-  border-radius: 2rem;
+  border-radius: 1rem;
   border: none;
   cursor: pointer;
-  background-color: rgb(74, 141, 250);
+  background-color: rgb(30, 102, 217);
   color: white;
   margin: 1rem 0;
 }
 
 .primary-btn:hover{
-  background-color: rgb(119, 170, 251);
+  background-color: rgb(77, 124, 217);
 }
 
 .btn-disabled{
@@ -38,7 +38,7 @@
 }
 
 .select{
-  height: 4rem;
+  min-height: 4rem;
   font-size: 1.7rem;
   text-align: center;
   border-radius: 1rem;
@@ -76,4 +76,8 @@
 
 .white-color{
   color: white;
+}
+
+.black-bg{
+  background-color: black;
 }
