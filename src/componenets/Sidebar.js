@@ -307,7 +307,7 @@ Example:
       <div className="social-handles">
         <button className='social-handles-btn' title='https://www.linkedin.com/in/abhilesh-singh/' onClick={socialHandlesBtn}><img className='btn-img' src={linkdinImg} alt="" /></button>
 
-        <button className='social-handles-btn black-bg' onClick={socialHandlesBtn}><img src={githubImg} alt="" className="btn-img" /></button>
+        <button className='social-handles-btn black-bg' title='https://github.com/ABHILESH1412/Graph-Visualizer' onClick={socialHandlesBtn}><img src={githubImg} alt="" className="btn-img" /></button>
       </div>
     </div>
   )
