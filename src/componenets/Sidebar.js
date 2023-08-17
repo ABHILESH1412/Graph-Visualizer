@@ -72,12 +72,12 @@ Example:
     if(flag){
       setGraphValues(event.target.value);
       setError(prevState => ({
-      ...prevState,
-      textArea1: {
-        ...prevState.textArea1,
-        currVal: 0
-      }
-    }));
+        ...prevState,
+        textArea1: {
+          ...prevState.textArea1,
+          currVal: 0
+        }
+      }));
     }
   }
 
@@ -113,7 +113,7 @@ Example:
     totalNodes = helper(i, cleanedString);
 
     //checking if we have Valid Total nodes or not
-    if(isNaN(totalEdges)){
+    if(isNaN(totalNodes)){
       setError(prevState => ({
         ...prevState,
         textArea1: {
@@ -148,7 +148,7 @@ Example:
     for(let j = 0; j < totalEdges || i.value < cleanedString.length; j++){
       let source = helper(i, cleanedString);
       let target = helper(i, cleanedString);
-      if(isNaN(source) || isNaN(target) || source >= totalNodes+nodesIndexing || source < nodesIndexing || target >= totalNodes+nodesIndexing || target < nodesIndexing){
+      if(isNaN(source) || isNaN(target) || source >= totalNodes+Number(nodesIndexing) || source < nodesIndexing || target >= totalNodes+Number(nodesIndexing) || target < nodesIndexing){
         setError(prevState => ({
           ...prevState,
           textArea1: {
@@ -171,6 +171,13 @@ Example:
       }));
     }else{
       props.setGraph(graphData);
+      setError(prevState => ({
+        ...prevState,
+        textArea1: {
+          ...prevState.textArea1,
+          currVal: 0
+        }
+      }));
     }
   }
 
