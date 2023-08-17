@@ -148,7 +148,7 @@ Example:
     for(let j = 0; j < totalEdges || i.value < cleanedString.length; j++){
       let source = helper(i, cleanedString);
       let target = helper(i, cleanedString);
-      if(isNaN(source) || isNaN(target) || source >= totalNodes || source < nodesIndexing || target >= totalNodes || target < nodesIndexing){
+      if(isNaN(source) || isNaN(target) || source >= totalNodes+nodesIndexing || source < nodesIndexing || target >= totalNodes+nodesIndexing || target < nodesIndexing){
         setError(prevState => ({
           ...prevState,
           textArea1: {
