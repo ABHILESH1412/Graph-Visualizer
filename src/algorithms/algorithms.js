@@ -203,41 +203,49 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       }
     }
 
-    async function bipartiteGraphHelper(node, prev, nColor){
-      if(vis[node] === true){
-        if(document.getElementById(`node-${node}`).style.fill !== nColor){
-          if (document.querySelector(`#edge-${prev}${node}`)) {
-            document.querySelector(`#edge-${prev}${node}`).style.stroke = 'red';
-          }
-          if (document.querySelector(`#edge-${node}${prev}`)) {
-            document.querySelector(`#edge-${node}${prev}`).style.stroke = 'red';
-          }
-          return -1;
-        }
-        return 0;
-      }
-
-      await new Promise(resolve => setTimeout(resolve, speed));
+    async function bipartiteGraphHelper(node){
+      const q = new Queue();
+      q.enqueue(new Pair(node, -1));
       vis[node] = true;
-      if (document.querySelector(`#edge-${prev}${node}`)) {
-        document.querySelector(`#edge-${prev}${node}`).style.stroke = lineColor;
-      }
-      if (document.querySelector(`#edge-${node}${prev}`)) {
-        document.querySelector(`#edge-${node}${prev}`).style.stroke = lineColor;
-      }
-      document.querySelector(`#node-${node}`).style.fill = nColor;
 
-      for(let i = 0; i < adj[node].length; i++){
-        const ans = await bipartiteGraphHelper(adj[node][i], node, (nColor === 'rgb(50, 151, 106)' ? 'blue' : 'rgb(50, 151, 106)'));
-        if(ans !== 0){
-          if (ans.length === undefined){
-            return [node, adj[node][i]];
+      document.querySelector(`#node-${node}`).style.fill = 'blue';
+      let nColor = 'rgb(50, 151, 106)';
+      await new Promise(resolve => setTimeout(resolve, speed));
+    
+      while (!q.isEmpty()) {
+        const frontNode = q.front().first;
+        //this code is written by THREE
+  
+        for (let i = 0; i < adj[frontNode].length; i++) {
+          if (vis[adj[frontNode][i]] === false) {
+            if (document.querySelector(`#edge-${adj[frontNode][i]}${frontNode}`)) {
+              document.querySelector(`#edge-${adj[frontNode][i]}${frontNode}`).style.stroke = lineColor;
+            }
+            if (document.querySelector(`#edge-${frontNode}${adj[frontNode][i]}`)) {
+              document.querySelector(`#edge-${frontNode}${adj[frontNode][i]}`).style.stroke = lineColor;
+            }
+            document.querySelector(`#node-${adj[frontNode][i]}`).style.fill = nColor;
+            q.enqueue(new Pair(adj[frontNode][i], frontNode));
+            vis[adj[frontNode][i]] = true;
+            await new Promise(resolve => setTimeout(resolve, speed));
+          } else{
+            if(document.getElementById(`node-${node}`).style.fill !== nColor){
+              if (document.querySelector(`#edge-${frontNode}${adj[frontNode][i]}`)) {
+                document.querySelector(`#edge-${frontNode}${adj[frontNode][i]}`).style.stroke = 'red';
+              }
+              if (document.querySelector(`#edge-${adj[frontNode][i]}${frontNode}`)) {
+                document.querySelector(`#edge-${adj[frontNode][i]}${frontNode}`).style.stroke = 'red';
+              }
+              return [frontNode, adj[frontNode][i]];
+            }
           }
-          return ans;
         }
+        
+        nColor = (nColor === 'rgb(50, 151, 106)' ? 'blue' : 'rgb(50, 151, 106)');
+        q.dequeue();
       }
 
-      return 0;
+      return [0];
     }
     
     if (algoSimulation === 'bfs') {
@@ -280,7 +288,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       async function performBipartiteGraph() {
         for (let i = nodesIndexing; i < size; i++) {
           if (vis[i] === false) {
-            const ans = await bipartiteGraphHelper(i, -1, 'rgb(50, 151, 106)');
+            const ans = await bipartiteGraphHelper(i);
             if(ans.length === 2){
               setOutput({
                 heading: 'Nope, not a Bipartite Graph',
