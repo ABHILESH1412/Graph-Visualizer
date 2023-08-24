@@ -2,7 +2,7 @@
   display: flex;
   height: 100vh;
   width: 100vw;
-  background-color: rgba(0, 0, 0, 100);
+  /* background-color: rgba(0, 0, 0, 100); */
   justify-content: center;
   align-items: center;
   /* border: 0.1rem solid red; */
@@ -28,4 +28,61 @@
 
 .output-heading1{
   font-weight: 500;
+}
+
+.steps{
+  /* border: 0.1rem solid red; */
+  display: flex;
+  justify-content: space-between;
+  /* align-items: center; */
+}
+
+.step-show{
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.steps input{
+  margin: 1rem;
+  border: none;
+  width: 3rem;
+  height: 4rem;
+  text-align: center;
+  border-radius: 1rem;
+  font-weight: 600;
+  padding: 0rem 1rem;
+}
+
+.steps input::-webkit-inner-spin-button,
+.steps input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.step-btn{
+  font-size: 2rem;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  border: none;
+  cursor: pointer;
+  background-color: rgb(30, 102, 217);
+  color: white;
+  margin: 1rem 0;
+}
+
+.step-btn:hover{
+  background-color: rgb(77, 124, 217);
+}
+
+.step-btn-disabled{
+  font-size: 2rem;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  border: none;
+  margin: 1rem 0;
+  background-color: rgb(75, 75, 75);
+  color: white;
+  cursor: not-allowed;
+  margin: 1rem 0;
 }

@@ -106,7 +106,39 @@ function detectCycleDirectedGraph(adj, nodesIndexing){
   return [false, anotherIndegree];
 }
 
-export function algorithms(graphType, algoSimulation, data, nodesIndexing, startingNode, setDisableFunctions, speed, setOutput) {
+function recordSteps(finalGraph, stepNumber, tempGraph){
+  finalGraph[stepNumber] = {
+    ...tempGraph
+  };
+}
+
+function changeLink(tempGraph, source, target, color){
+  tempGraph.links = tempGraph.links.map((link) => {
+    if(link.source.id == source && link.target.id == target){
+      link = {
+        ...link,
+        color: color
+      }
+    }
+
+    return link;
+  })
+}
+
+function changeNode(tempGraph, currNode, color){
+  tempGraph.nodes = tempGraph.nodes.map((node) => {
+    if(node.id == currNode){
+      node = {
+        ...node,
+        color: color
+      }
+    }
+
+    return node;
+  });
+}
+
+export function algorithms(graphType, algoSimulation, data, nodesIndexing, startingNode, setDisableFunctions, speed, setOutput, setSteps) {
   const circles = document.querySelectorAll('svg circle');
   circles.forEach(circle => {
     circle.style.fill = 'red';
@@ -118,7 +150,29 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
   const paths = document.querySelectorAll('svg path');
   paths.forEach(path => {
     path.style.fill = 'orange';
-  })
+  });
+
+  let stepNumber = 0;
+  let finalGraph = {};
+  let tempGraph = {
+    ...data
+  };
+  tempGraph.nodes = tempGraph.nodes.map((node) => {
+    node = {
+      ...node,
+      color: 'red'
+    }
+    return node;
+  });
+  tempGraph.links = tempGraph.links.map((link) => {
+    link = {
+      ...link,
+      color: 'orange'
+    }
+    return link;
+  });
+  recordSteps(finalGraph, stepNumber++, tempGraph);
+
   const lineColor = '#F2F1F1';
   const nodeColor = 'rgb(50, 151, 106)';
   const size = data.nodes.length + parseInt(nodesIndexing);
@@ -143,39 +197,49 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       const q = new Queue();
       q.enqueue(new Pair(node, -1));
       vis[node] = true;
-    
-      async function processQueue() {
-        while (!q.isEmpty()) {
-          const frontNode = q.front().first;
-          // console.log(q.front().first);
-          
-          if (document.querySelector(`#edge-${q.front().second}${frontNode}`)) {
-            document.querySelector(`#edge-${q.front().second}${frontNode}`).style.stroke = lineColor;
-          }
-          if (document.querySelector(`#edge-${frontNode}${q.front().second}`)) {
-            document.querySelector(`#edge-${frontNode}${q.front().second}`).style.stroke = lineColor;
-          }
-          document.querySelector(`#node-${frontNode}`).style.fill = nodeColor;
-          BFSOrder += `${frontNode} `;
-          setOutput(prevState => ({
-            ...prevState,
-            result: BFSOrder
-          }));
-          //this code is written by THREE
-    
-          for (let i = 0; i < adj[frontNode].length; i++) {
-            if (vis[adj[frontNode][i]] === false) {
-              q.enqueue(new Pair(adj[frontNode][i], frontNode));
-              vis[adj[frontNode][i]] = true; 
+
+      while (!q.isEmpty()) {
+        const frontNode = q.front().first;
+        // console.log(q.front().first);
+        
+        if (document.querySelector(`#edge-${q.front().second}${frontNode}`)) {
+          document.querySelector(`#edge-${q.front().second}${frontNode}`).style.stroke = lineColor;
+          changeLink(tempGraph, q.front().second, frontNode, lineColor);
+        }
+        if (document.querySelector(`#edge-${frontNode}${q.front().second}`)) {
+          document.querySelector(`#edge-${frontNode}${q.front().second}`).style.stroke = lineColor;
+          changeLink(tempGraph, frontNode, q.front().second, lineColor);
+        }
+        document.querySelector(`#node-${frontNode}`).style.fill = nodeColor;
+        changeNode(tempGraph, frontNode, nodeColor);
+        tempGraph.nodes = tempGraph.nodes.map((node) => {
+          if(node.id == frontNode){
+            node = {
+              ...node,
+              color: nodeColor
             }
           }
-    
-          q.dequeue();
-          await new Promise(resolve => setTimeout(resolve, speed));
+
+          return node;
+        })
+        recordSteps(finalGraph, stepNumber++, tempGraph);
+        BFSOrder += `${frontNode} `;
+        setOutput(prevState => ({
+          ...prevState,
+          result: BFSOrder
+        }));
+        //this code is written by THREE
+  
+        for (let i = 0; i < adj[frontNode].length; i++) {
+          if (vis[adj[frontNode][i]] === false) {
+            q.enqueue(new Pair(adj[frontNode][i], frontNode));
+            vis[adj[frontNode][i]] = true; 
+          }
         }
+  
+        q.dequeue();
+        await new Promise(resolve => setTimeout(resolve, speed));
       }
-    
-      await processQueue(); // Start processing
     }
 
     async function dfsHelper(node, prev, DFSOrder){
@@ -187,11 +251,15 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       vis[node] = true;
       if (document.querySelector(`#edge-${prev}${node}`)) {
         document.querySelector(`#edge-${prev}${node}`).style.stroke = lineColor;
+        changeLink(tempGraph, prev, node, lineColor);
       }
       if (document.querySelector(`#edge-${node}${prev}`)) {
         document.querySelector(`#edge-${node}${prev}`).style.stroke = lineColor;
+        changeLink(tempGraph, node, prev, lineColor);
       }
       document.querySelector(`#node-${node}`).style.fill = nodeColor;
+      changeNode(tempGraph, node, nodeColor);
+      recordSteps(finalGraph, stepNumber++, tempGraph);
       DFSOrder.order += `${node} `;
       setOutput(prevState => ({
         ...prevState,
@@ -209,7 +277,9 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       vis[node] = true;
 
       document.querySelector(`#node-${node}`).style.fill = 'blue';
+      changeNode(tempGraph, node, 'blue');
       let nColor = 'rgb(50, 151, 106)';
+      recordSteps(finalGraph, stepNumber++, tempGraph);
       await new Promise(resolve => setTimeout(resolve, speed));
     
       while (!q.isEmpty()) {
@@ -220,22 +290,29 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
           if (vis[adj[frontNode][i]] === false) {
             if (document.querySelector(`#edge-${adj[frontNode][i]}${frontNode}`)) {
               document.querySelector(`#edge-${adj[frontNode][i]}${frontNode}`).style.stroke = lineColor;
+              changeLink(tempGraph, adj[frontNode][i], frontNode, lineColor);
             }
             if (document.querySelector(`#edge-${frontNode}${adj[frontNode][i]}`)) {
               document.querySelector(`#edge-${frontNode}${adj[frontNode][i]}`).style.stroke = lineColor;
+              changeLink(tempGraph, frontNode, adj[frontNode][i], lineColor);
             }
             document.querySelector(`#node-${adj[frontNode][i]}`).style.fill = nColor;
+            changeNode(tempGraph, adj[frontNode][i], nColor);
             q.enqueue(new Pair(adj[frontNode][i], frontNode));
             vis[adj[frontNode][i]] = true;
+            recordSteps(finalGraph, stepNumber++, tempGraph);
             await new Promise(resolve => setTimeout(resolve, speed));
           } else{
             if(document.getElementById(`node-${node}`).style.fill !== nColor){
               if (document.querySelector(`#edge-${frontNode}${adj[frontNode][i]}`)) {
                 document.querySelector(`#edge-${frontNode}${adj[frontNode][i]}`).style.stroke = 'red';
+                changeLink(tempGraph, frontNode, adj[frontNode][i], 'red');
               }
               if (document.querySelector(`#edge-${adj[frontNode][i]}${frontNode}`)) {
                 document.querySelector(`#edge-${adj[frontNode][i]}${frontNode}`).style.stroke = 'red';
+                changeLink(tempGraph, adj[frontNode][i], frontNode, 'red');
               }
+              recordSteps(finalGraph, stepNumber++, tempGraph);
               return [frontNode, adj[frontNode][i]];
             }
           }
@@ -261,6 +338,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         //   }
         // }
         setDisableFunctions(false);
+        setSteps(finalGraph);
       }
     
       performBFS(); // Start BFS traversal
@@ -280,6 +358,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         //   }
         // }
         setDisableFunctions(false);
+        setSteps(finalGraph);
       }
       //this code is written by THREE
       performDFS(); // Start DFS traversal
@@ -308,6 +387,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         }
         
         setDisableFunctions(false);
+        setSteps(finalGraph);
       }
       //this code is written by THREE
       performBipartiteGraph();
@@ -326,37 +406,36 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       q.enqueue(new Pair(node, -1));
       vis[node] = true;
     
-      async function processQueue() {
-        while (!q.isEmpty()) {
-          const frontNode = q.front().first;
-          
-          if (document.querySelector(`#edge-${q.front().second}${frontNode}`)) {
-            document.querySelector(`#edge-${q.front().second}${frontNode}`).style.stroke = lineColor;
-          }
-          if (document.getElementById(`arrow-${q.front().second}${frontNode}`)){
-            document.getElementById(`arrow-${q.front().second}${frontNode}`).style.fill = 'white';
-          }
-          document.querySelector(`#node-${frontNode}`).style.fill = nodeColor;
-          BFSOrder += `${frontNode} `;
-          setOutput(prevState => ({
-            ...prevState,
-            result: BFSOrder
-          }));
-          //this code is written by THREE
-    
-          for (let i = 0; i < adj[frontNode].length; i++) {
-            if (vis[adj[frontNode][i]] === false) {
-              q.enqueue(new Pair(adj[frontNode][i], frontNode));
-              vis[adj[frontNode][i]] = true;
-            }
-          }
-    
-          q.dequeue();
-          await new Promise(resolve => setTimeout(resolve, speed)); // Wait for 0.5 second
+      while (!q.isEmpty()) {
+        const frontNode = q.front().first;
+        
+        if (document.querySelector(`#edge-${q.front().second}${frontNode}`)) {
+          document.querySelector(`#edge-${q.front().second}${frontNode}`).style.stroke = lineColor;
+          changeLink(tempGraph, q.front().second, frontNode, lineColor);
         }
+        if (document.getElementById(`arrow-${q.front().second}${frontNode}`)){
+          document.getElementById(`arrow-${q.front().second}${frontNode}`).style.fill = 'white';
+        }
+        document.querySelector(`#node-${frontNode}`).style.fill = nodeColor;
+        changeNode(tempGraph, frontNode, nodeColor);
+        recordSteps(finalGraph, stepNumber++, tempGraph);
+        BFSOrder += `${frontNode} `;
+        setOutput(prevState => ({
+          ...prevState,
+          result: BFSOrder
+        }));
+        //this code is written by THREE
+  
+        for (let i = 0; i < adj[frontNode].length; i++) {
+          if (vis[adj[frontNode][i]] === false) {
+            q.enqueue(new Pair(adj[frontNode][i], frontNode));
+            vis[adj[frontNode][i]] = true;
+          }
+        }
+  
+        q.dequeue();
+        await new Promise(resolve => setTimeout(resolve, speed));
       }
-    
-      await processQueue(); // Start processing
     }
 
     async function dfsHelper(node, prev, DFSOrder){
@@ -368,11 +447,14 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       vis[node] = true;
       if (document.querySelector(`#edge-${prev}${node}`)) {
         document.querySelector(`#edge-${prev}${node}`).style.stroke = lineColor;
+        changeLink(tempGraph, prev, node, lineColor);
       }
       if (document.getElementById(`arrow-${prev}${node}`)){
         document.getElementById(`arrow-${prev}${node}`).style.fill = 'white';
       }
       document.querySelector(`#node-${node}`).style.fill = nodeColor;
+      changeNode(tempGraph, node, nodeColor);
+      recordSteps(finalGraph, stepNumber++, tempGraph);
       DFSOrder.order += `${node} `;
       setOutput(prevState => ({
         ...prevState,
@@ -400,11 +482,14 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
           
           if (document.querySelector(`#edge-${q.front().second}${frontNode}`)) {
             document.querySelector(`#edge-${q.front().second}${frontNode}`).style.stroke = lineColor;
+            changeLink(tempGraph, q.front().second, frontNode, lineColor);
           }
           if (document.getElementById(`arrow-${q.front().second}${frontNode}`)){
             document.getElementById(`arrow-${q.front().second}${frontNode}`).style.fill = 'white';
           }
           document.querySelector(`#node-${frontNode}`).style.fill = nodeColor;
+          changeNode(tempGraph, frontNode, nodeColor);
+          recordSteps(finalGraph, stepNumber++, tempGraph);
 
           for(let i = 0; i < adj[q.front().first].length; i++){
             indegree[adj[q.front().first][i]]--;
@@ -439,6 +524,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         //   }
         // }//THREE
         setDisableFunctions(false);
+        setSteps(finalGraph);
       }
     
       performBFS();
@@ -458,6 +544,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         //   }
         // }
         setDisableFunctions(false);
+        setSteps(finalGraph);
       }
       //this code is written by THREE
       performDFS(); // Start DFS traversal
@@ -476,6 +563,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
             heading: 'One of the Topological Sort Order:'
           }));
           await topoSortHelper(checkCycle[1])
+          setSteps(finalGraph);
           // console.log(await topoSortHelper(checkCycle[1]));
         }
         setDisableFunctions(false);

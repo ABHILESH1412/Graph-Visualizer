@@ -44,11 +44,21 @@ Example:
     props.setGraphType(event.target.value);
     props.setAlgoSimulation('none');
     algoSimSelectRef.current.value = 'none';
+    props.setOutput({
+      heading: '',
+      result: ''
+    })
+    props.setSteps({});
   }
 
   const nodesIndexingChange = (event) => {
     setNodesIndexing(event.target.value);
     setStartingNode(event.target.value);
+    props.setOutput({
+      heading: '',
+      result: ''
+    })
+    props.setSteps({});
   }
 
   const userInput = (event) => {
@@ -170,6 +180,11 @@ Example:
         }
       }));
     }else{
+      props.setOutput({
+        heading: '',
+        result: ''
+      })
+      props.setSteps({});
       props.setGraph(graphData);
       setError(prevState => ({
         ...prevState,
@@ -202,7 +217,8 @@ Example:
       heading: '',
       result: ''
     });
-    algorithms(props.graphType, props.algoSimulation, props.graph, nodesIndexing, startingNode, setDisableFunctions, speed, props.setOutput);
+    props.setSteps({});
+    algorithms(props.graphType, props.algoSimulation, props.graph, nodesIndexing, startingNode, setDisableFunctions, speed, props.setOutput, props.setSteps);
   }
 
   const startingNodeChange = (event) => {
@@ -236,7 +252,6 @@ Example:
   }
 
   const speedBtnClicked = (event) => {
-    console.log(event.target.innerText);
     if(event.target.innerText === 'Slow'){
       setAnimationSpeedBtn(0);
       setSpeed(1500);
@@ -258,16 +273,15 @@ Example:
   };
 
   const socialHandlesBtn = (event) => {
-    console.log(event.target.parentNode.title);
     window.open(event.target.parentNode.title, '_blank');
   }
 
   return (
     <div className='sidebar'>
-      <div className="controls">
-        <div className='sidebar-heading'>
-          <p>Graph Visualizer</p>
-        </div>
+      <div className='sidebar-heading'>
+        <p>Graph Visualizer</p>
+      </div>
+      <div className="controls scrollable-div">
         <select name="graphType" className = {'select ' + (disableFunctions && 'disabled-cursor')} onChange={graphTypeChange} disabled={disableFunctions}>
           <option value="undirectedGraph">Undirected Graph</option>
           <option value="directedGraph">Directed Graph</option>
@@ -307,6 +321,7 @@ Example:
             <button className={`${disableFunctions ? 'speed-btn-disabled' : 'speed-btn'} ${animationSpeedBtn === 0 ? 'selected-btn' : ''}`} onClick={speedBtnClicked} disabled={disableFunctions}>Slow</button>
             <button className={`${disableFunctions ? 'speed-btn-disabled' : 'speed-btn'} ${animationSpeedBtn === 1 ? 'selected-btn' : ''}`} onClick={speedBtnClicked} disabled={disableFunctions}>Normal</button>
             <button className={`${disableFunctions ? 'speed-btn-disabled' : 'speed-btn'} ${animationSpeedBtn === 2 ? 'selected-btn' : ''}`} onClick={speedBtnClicked} disabled={disableFunctions}>Fast</button>
+            {/* this code is written by THREE */}
           </div>
           <button className = {disableFunctions ? 'btn-disabled' : 'primary-btn'} onClick={algoSimulationRunBtn} disabled={disableFunctions}>Run Simulation</button>
         </>}

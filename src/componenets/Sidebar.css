@@ -12,6 +12,9 @@
 .controls{
   display: flex;
   flex-direction: column;
+  /* border: 0.2rem solid red; */
+  padding: 0.5rem;
+  height: 100%;
 }
 
 .sidebar-heading{
@@ -87,6 +90,7 @@
 
 .social-handles-btn{
   height: 4.2rem;
+  width: 4.2rem;
   border-radius: 100%;
   border: none;
   overflow: hidden;
@@ -96,4 +100,15 @@
 
 .btn-img{
   height: 100%;
+  width: 100%;
+}
+
+.scrollable-div {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  overflow: scroll; /* This is needed for Webkit-based browsers (Chrome, Safari) */
+}
+
+.scrollable-div::-webkit-scrollbar {
+  display: none; /* This hides the scrollbar for Webkit-based browsers */
 }
