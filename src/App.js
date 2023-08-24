@@ -122,7 +122,6 @@ function App() {
         </>}
         <br />
         <br />
-        <br />
         <p className = 'output-heading1 white-color ft-sz-2'>{output.heading}</p>
         <br />
         <p className = 'white-color ft-sz-1'>{output.result}</p>

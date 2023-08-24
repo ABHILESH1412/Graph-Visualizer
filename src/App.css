@@ -35,6 +35,8 @@
   display: flex;
   justify-content: space-between;
   /* align-items: center; */
+  border-bottom: 0.2rem solid grey;
+  padding-bottom: 1rem;
 }
 
 .step-show{
