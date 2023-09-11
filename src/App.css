@@ -44,7 +44,7 @@
   align-items: center;
   font-weight: 600;
 }
-
+ 
 .steps input{
   margin: 1rem;
   border: none;
@@ -54,6 +54,7 @@
   border-radius: 1rem;
   font-weight: 600;
   padding: 0rem 1rem;
+  -moz-appearance: textfield;
 }
 
 .steps input::-webkit-inner-spin-button,

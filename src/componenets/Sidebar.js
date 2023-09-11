@@ -198,6 +198,7 @@ Example:
 
   const algoSimulationChange = (event) => {
     props.setAlgoSimulation(event.target.value);
+    setStartingNode(nodesIndexing);
   }
 
   const algoSimulationRunBtn = () => {
@@ -304,6 +305,7 @@ Example:
           <option value="none">Algorithm Simulation</option>
           <option value="dfs">Depth First Search (DFS)</option>
           <option value="bfs">Breadth First Search (BFS)</option>
+          <option value="detectCycle">Detect Cycle</option>
           <option value='bipartiteGraph' disabled = {props.graphType === 'directedGraph' ? true : false}>Bipartite Graph {props.graphType === 'directedGraph' ? '(only for Undirected Graph)' : ''}</option>
           <option value='topoSort' disabled = {props.graphType === 'undirectedGraph' ? true : false}>Topological Sort {props.graphType === 'undirectedGraph' ? '(only for Directed Graph)' : ''}</option>
         </select>

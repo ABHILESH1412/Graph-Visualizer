@@ -51,7 +51,7 @@ export default function Graph(props) {
       .on('drag', (event, d) => dragged(event, d))
       .on('end', (event, d) => dragended(event, d));
 
-    //Edges of the Graph
+    // Edges of the Graph
     let links = cvs
       .append('g')
       .selectAll('.link')
@@ -64,6 +64,29 @@ export default function Graph(props) {
       .attr('id', (d) => {
         return 'edge-' + d.source.id + d.target.id;
       })
+
+    // for curved edges
+    // const links = cvs
+    //   .append('g')
+    //   .selectAll('.link')
+    //   .data(props.graph.links)
+    //   .enter()
+    //   .append('path') // Use path instead of line
+    //   .attr('class', 'link')
+    //   .attr('stroke-width', edgeWidth)
+    //   .attr('stroke', edgeColor)
+    //   .attr('fill', 'none')
+    //   .attr('id', (d) => 'edge-' + d.source.id + '-' + d.target.id)
+    //   .attr('d', (d) => {
+    //     // Calculate the control points for a curved link
+    //     const sourceX = d.source.x;
+    //     const sourceY = d.source.y;
+    //     const targetX = d.target.x;
+    //     const targetY = d.target.y;
+
+    //     return `M${sourceX},${sourceY} C${sourceX},${(sourceY + targetY) / 2} ${targetX},${(sourceY + targetY) / 2} ${targetX},${targetY}`;
+    //   });
+  
 
     if(props.graphType === 'directedGraph'){
       // // Pointing Arrows
@@ -163,6 +186,22 @@ export default function Graph(props) {
         .attr('y2', (d) => {
           return d.target.y;
         })
+
+      //for curved path
+      // links.attr('d', (d) => {
+      //   const sourceX = d.source.x;
+      //   const sourceY = d.source.y;
+      //   const targetX = d.target.x;
+      //   const targetY = d.target.y;
+
+      //   const dx = targetX - sourceX;
+      //   const dy = targetY - sourceY;
+      //   const dr = Math.sqrt(dx * dx + dy * dy);
+      //   const xOffset = sourceX + (dx / dr) * nodeRadius;
+      //   const yOffset = sourceY + (dy / dr) * nodeRadius;
+
+      //   return `M${sourceX},${sourceY} C${sourceX},${(sourceY + targetY) / 2} ${targetX},${(sourceY + targetY) / 2} ${targetX},${targetY}`;
+      // });
     }
 
     //Zoom in and Zoom out functionality
