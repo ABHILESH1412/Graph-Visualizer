@@ -372,7 +372,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
           // }));
         }
         //If we have reaced to that node, at which we came to know that there exists a cycle in the graph
-        if(node == tempVar[2]){
+        if(node == tempVar[1]){
           tempVar[2] = true;
         }
 
@@ -634,15 +634,20 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       await processQueue();
     }
 
-    async function detectCycleHelper(node, prev, cycleNodes){
-      if(vis[node] === true){
+    async function detectCycleHelper(node, prev, cycleNodes, anotherVis){
+      if(anotherVis[node] === true){
         // console.log('Cycle Exist');
         await new Promise(resolve => setTimeout(resolve, speed));
+        cycleNodes.nodes.push(node);
         return [true, node, false];
+      }
+      if(vis[node] === true){
+        return [false];
       }
 
       await new Promise(resolve => setTimeout(resolve, speed));
       vis[node] = true;
+      anotherVis[node] = true;
       if (document.querySelector(`#edge-${prev}${node}`)) {
         document.querySelector(`#edge-${prev}${node}`).style.stroke = lineColor;
         changeLink(tempGraph, prev, node, lineColor);
@@ -658,32 +663,29 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
 
       for(let i = 0; i < adj[node].length; i++){
         //If the current node is th prev node
-        if(prev === adj[node][i]){
-          continue;
-        }
+        // if(prev === adj[node][i]){
+        //   continue;
+        // }
 
-        const tempVar = await detectCycleHelper(adj[node][i], node, cycleNodes);
+        const tempVar = await detectCycleHelper(adj[node][i], node, cycleNodes, anotherVis);
         //If cycle doesn't exist we continue with the algo
         if(!tempVar[0]){
           continue;
         }
         
-        //This condition keeps on adding the nodes in the string till we find out that we have reached to the node, at which we came to know that there exists a cycle in the graph, So that we can show which nodes make the cycle in the graph in order.
-        if(!tempVar[2]){
-          cycleNodes.nodes.push(node);
-          // cycleNodes.nodes = `${node} ` + cycleNodes.nodes;
-          // setOutput(prevState => ({
-          //   ...prevState,
-          //   result: cycleNodes.nodes
-          // }));
-        }
         //If we have reaced to that node, at which we came to know that there exists a cycle in the graph
         if(node == tempVar[2]){
           tempVar[2] = true;
         }
 
+        //This condition keeps on adding the nodes in the string till we find out that we have reached to the node, at which we came to know that there exists a cycle in the graph, So that we can show which nodes make the cycle in the graph in order.
+        if(!tempVar[2]){
+          cycleNodes.nodes.push(node);
+        }
+
         return [true, tempVar[1], tempVar[2]];
       }
+      anotherVis[node] = false;
 
       return [false];
     }
@@ -754,9 +756,10 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         let cycleNodes = {
           nodes: []
         };
+        let anotherVis = Array.from({ length: size }).fill(false);
         for (let i = nodesIndexing; i < size; i++) {
           if (vis[i] === false) {
-            flag = await detectCycleHelper(i, -1, cycleNodes);
+            flag = await detectCycleHelper(i, -1, cycleNodes, anotherVis);
 
             //If cycle detected
             if(flag[0]){
@@ -767,7 +770,10 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
               
               let firstNode = cycleNodes.nodes[0], secondNode, outputString = `${cycleNodes.nodes[cycleNodes.nodes.length-1]} `;
               for(let j = 1; j < cycleNodes.nodes.length; j++){
-                outputString += `${cycleNodes.nodes[cycleNodes.nodes.length-j-1]} `;
+                if(j < cycleNodes.nodes.length-1){
+                  outputString += `${cycleNodes.nodes[cycleNodes.nodes.length-j-1]} `;
+                }
+                
                 secondNode = cycleNodes.nodes[j];
                 document.querySelector(`#edge-${secondNode}${firstNode}`).style.stroke = 'red';
                 changeLink(tempGraph, secondNode, firstNode, 'red');
@@ -784,17 +790,14 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
               }
               firstNode = cycleNodes.nodes[0];
               secondNode = cycleNodes.nodes[cycleNodes.nodes.length-1];
-              document.querySelector(`#edge-${firstNode}${secondNode}`).style.stroke = 'red';
-              changeLink(tempGraph, firstNode, secondNode, 'red');
-              document.getElementById(`arrow-${firstNode}${secondNode}`).style.fill = 'red';
-              // if (document.querySelector(`#edge-${firstNode}${secondNode}`)) {
-              //   document.querySelector(`#edge-${firstNode}${secondNode}`).style.stroke = 'red';
-              //   changeLink(tempGraph, firstNode, secondNode, lineColor);
-              // }
-              // if (document.querySelector(`#edge-${secondNode}${firstNode}`)) {
-              //   document.querySelector(`#edge-${secondNode}${firstNode}`).style.stroke = 'red';
-              //   changeLink(tempGraph, secondNode, firstNode, lineColor);
-              // }
+              if (document.querySelector(`#edge-${firstNode}${secondNode}`)) {
+                document.querySelector(`#edge-${firstNode}${secondNode}`).style.stroke = 'red';
+                changeLink(tempGraph, firstNode, secondNode, 'red');
+              }
+              if (document.querySelector(`#edge-${secondNode}${firstNode}`)) {
+                document.querySelector(`#edge-${secondNode}${firstNode}`).style.stroke = 'red';
+                changeLink(tempGraph, secondNode, firstNode, 'red');
+              }
               recordSteps(finalGraph, stepNumber++, tempGraph);
               setOutput(prevState => ({
                 ...prevState,
