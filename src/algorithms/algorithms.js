@@ -329,8 +329,8 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
 
     async function detectCycleHelper(node, prev, cycleNodes){
       if(vis[node] === true){
-        console.log('Cycle Exist');
-
+        // console.log('Cycle Exist');
+        await new Promise(resolve => setTimeout(resolve, speed));
         return [true, node, false];
       }
 
@@ -458,6 +458,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         for (let i = nodesIndexing; i < size; i++) {
           if (vis[i] === false) {
             flag = await detectCycleHelper(i, -1, cycleNodes);
+            // If cycle exists in the graph
             if(flag[0]){
               setOutput(prevState => ({
                 ...prevState,
@@ -470,11 +471,11 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
                 secondNode = cycleNodes.nodes[j];
                 if (document.querySelector(`#edge-${firstNode}${secondNode}`)) {
                   document.querySelector(`#edge-${firstNode}${secondNode}`).style.stroke = 'red';
-                  changeLink(tempGraph, firstNode, secondNode, lineColor);
+                  changeLink(tempGraph, firstNode, secondNode, 'red');
                 }
                 if (document.querySelector(`#edge-${secondNode}${firstNode}`)) {
                   document.querySelector(`#edge-${secondNode}${firstNode}`).style.stroke = 'red';
-                  changeLink(tempGraph, secondNode, firstNode, lineColor);
+                  changeLink(tempGraph, secondNode, firstNode, 'red');
                 }
                 firstNode = secondNode;
               }
@@ -482,11 +483,11 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
               secondNode = cycleNodes.nodes[cycleNodes.nodes.length-1];
               if (document.querySelector(`#edge-${firstNode}${secondNode}`)) {
                 document.querySelector(`#edge-${firstNode}${secondNode}`).style.stroke = 'red';
-                changeLink(tempGraph, firstNode, secondNode, lineColor);
+                changeLink(tempGraph, firstNode, secondNode, 'red');
               }
               if (document.querySelector(`#edge-${secondNode}${firstNode}`)) {
                 document.querySelector(`#edge-${secondNode}${firstNode}`).style.stroke = 'red';
-                changeLink(tempGraph, secondNode, firstNode, lineColor);
+                changeLink(tempGraph, secondNode, firstNode, 'red');
               }
               recordSteps(finalGraph, stepNumber++, tempGraph);
               setOutput(prevState => ({
@@ -507,6 +508,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         }
         setDisableFunctions(false);
         setSteps(finalGraph);
+        console.log(finalGraph);
       }
       //this code is written by THREE
       performDFS();
@@ -632,6 +634,60 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       await processQueue();
     }
 
+    async function detectCycleHelper(node, prev, cycleNodes){
+      if(vis[node] === true){
+        // console.log('Cycle Exist');
+        await new Promise(resolve => setTimeout(resolve, speed));
+        return [true, node, false];
+      }
+
+      await new Promise(resolve => setTimeout(resolve, speed));
+      vis[node] = true;
+      if (document.querySelector(`#edge-${prev}${node}`)) {
+        document.querySelector(`#edge-${prev}${node}`).style.stroke = lineColor;
+        changeLink(tempGraph, prev, node, lineColor);
+      }
+      if (document.getElementById(`arrow-${prev}${node}`)){
+        document.getElementById(`arrow-${prev}${node}`).style.fill = 'white';
+      }
+      document.querySelector(`#node-${node}`).style.fill = nodeColor;
+      changeNode(tempGraph, node, nodeColor);
+
+      changeNode(tempGraph, node, nodeColor);
+      recordSteps(finalGraph, stepNumber++, tempGraph);
+
+      for(let i = 0; i < adj[node].length; i++){
+        //If the current node is th prev node
+        if(prev === adj[node][i]){
+          continue;
+        }
+
+        const tempVar = await detectCycleHelper(adj[node][i], node, cycleNodes);
+        //If cycle doesn't exist we continue with the algo
+        if(!tempVar[0]){
+          continue;
+        }
+        
+        //This condition keeps on adding the nodes in the string till we find out that we have reached to the node, at which we came to know that there exists a cycle in the graph, So that we can show which nodes make the cycle in the graph in order.
+        if(!tempVar[2]){
+          cycleNodes.nodes.push(node);
+          // cycleNodes.nodes = `${node} ` + cycleNodes.nodes;
+          // setOutput(prevState => ({
+          //   ...prevState,
+          //   result: cycleNodes.nodes
+          // }));
+        }
+        //If we have reaced to that node, at which we came to know that there exists a cycle in the graph
+        if(node == tempVar[2]){
+          tempVar[2] = true;
+        }
+
+        return [true, tempVar[1], tempVar[2]];
+      }
+
+      return [false];
+    }
+
     if(algoSimulation === 'bfs'){
       setOutput(prevState => ({
         ...prevState,
@@ -691,6 +747,77 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       }
     
       performTopoSort();
+    }else if(algoSimulation === 'detectCycle'){
+      // console.log('Detect Cycle Function');
+      async function performDFS() {
+        let flag = [false];
+        let cycleNodes = {
+          nodes: []
+        };
+        for (let i = nodesIndexing; i < size; i++) {
+          if (vis[i] === false) {
+            flag = await detectCycleHelper(i, -1, cycleNodes);
+
+            //If cycle detected
+            if(flag[0]){
+              setOutput(prevState => ({
+                ...prevState,
+                heading: 'Cycle Detected'
+              }));
+              
+              let firstNode = cycleNodes.nodes[0], secondNode, outputString = `${cycleNodes.nodes[cycleNodes.nodes.length-1]} `;
+              for(let j = 1; j < cycleNodes.nodes.length; j++){
+                outputString += `${cycleNodes.nodes[cycleNodes.nodes.length-j-1]} `;
+                secondNode = cycleNodes.nodes[j];
+                document.querySelector(`#edge-${secondNode}${firstNode}`).style.stroke = 'red';
+                changeLink(tempGraph, secondNode, firstNode, 'red');
+                document.getElementById(`arrow-${secondNode}${firstNode}`).style.fill = 'red';
+                // if (document.querySelector(`#edge-${firstNode}${secondNode}`)) {
+                //   document.querySelector(`#edge-${firstNode}${secondNode}`).style.stroke = 'red';
+                //   changeLink(tempGraph, firstNode, secondNode, lineColor);
+                // }
+                // if (document.querySelector(`#edge-${secondNode}${firstNode}`)) {
+                //   document.querySelector(`#edge-${secondNode}${firstNode}`).style.stroke = 'red';
+                //   changeLink(tempGraph, secondNode, firstNode, lineColor);
+                // }
+                firstNode = secondNode;
+              }
+              firstNode = cycleNodes.nodes[0];
+              secondNode = cycleNodes.nodes[cycleNodes.nodes.length-1];
+              document.querySelector(`#edge-${firstNode}${secondNode}`).style.stroke = 'red';
+              changeLink(tempGraph, firstNode, secondNode, 'red');
+              document.getElementById(`arrow-${firstNode}${secondNode}`).style.fill = 'red';
+              // if (document.querySelector(`#edge-${firstNode}${secondNode}`)) {
+              //   document.querySelector(`#edge-${firstNode}${secondNode}`).style.stroke = 'red';
+              //   changeLink(tempGraph, firstNode, secondNode, lineColor);
+              // }
+              // if (document.querySelector(`#edge-${secondNode}${firstNode}`)) {
+              //   document.querySelector(`#edge-${secondNode}${firstNode}`).style.stroke = 'red';
+              //   changeLink(tempGraph, secondNode, firstNode, lineColor);
+              // }
+              recordSteps(finalGraph, stepNumber++, tempGraph);
+              setOutput(prevState => ({
+                ...prevState,
+                result: outputString
+              }));
+              
+              break;
+            }
+          }
+        }
+        if(!flag[0]){
+          setOutput(prevState => ({
+            ...prevState,
+            heading: 'No Cycle exists in the given Graph'
+          }));
+          // console.log('No Cycle Exist');
+        }
+        setDisableFunctions(false);
+        setSteps(finalGraph);
+        // console.log(finalGraph);
+      }
+      //this code is written by THREE
+      performDFS();
     }
   }
 }

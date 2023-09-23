@@ -64,14 +64,14 @@ function App() {
   });
 
   function showStep(step) {
-    steps[step-1].nodes.map((node) => {
+    steps[Number(step)-1].nodes.map((node) => {
       document.querySelector(`#node-${node.id}`).style.fill = node.color;
     })
-    steps[step-1].links.map((link) => {
+    steps[Number(step)-1].links.map((link) => {
       document.querySelector(`#edge-${link.source.id}${link.target.id}`).style.stroke = link.color;
     })
     if(graphType === 'directedGraph'){
-      steps[step-1].links.map((arrow) => {
+      steps[Number(step)-1].links.map((arrow) => {
         document.getElementById(`arrow-${arrow.source.id}${arrow.target.id}`).style.fill = arrow.color;
       })
     }
@@ -112,12 +112,12 @@ function App() {
           <p className='output-heading1 ft-sz-2 white-color'>Algorithm Steps: </p>
           <br />
           <div className="steps">
-            <button className={`${count == 1 ? 'step-btn-disabled ' : 'step-btn '} ft-sz-1`} onClick={() => {if(count > 1){showStep(count-1); setCount(count-1);}}}>Prev</button>
+            <button className={`${count == 1 ? 'step-btn-disabled ' : 'step-btn '} ft-sz-1`} onClick={() => {if(count > 1){showStep(count-1); setCount(Number(count)-1);}}}>Prev</button>
             <div className='step-show'>
               <input type="number" value={count} onChange={(event) => setCount(event.target.value)} onKeyDown = {detectEnter} className='ft-sz-1' />
               <p className='ft-sz-2 white-color'>/ {`${Object.keys(steps).length}`}</p>
             </div>
-            <button className={`${count == Object.keys(steps).length ? 'step-btn-disabled ' : 'step-btn '} ft-sz-1`} onClick={() => {if(count < Object.keys(steps).length){showStep(count+1); setCount(count+1);}}}>Next</button>
+            <button className={`${count == Object.keys(steps).length ? 'step-btn-disabled ' : 'step-btn '} ft-sz-1`} onClick={() => {if(count < Object.keys(steps).length){showStep(Number(count)+1); setCount(Number(count)+1);}}}>Next</button>
           </div>
         </>}
         <br />
