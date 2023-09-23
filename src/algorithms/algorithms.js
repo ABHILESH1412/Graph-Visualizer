@@ -788,16 +788,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
                 // }
                 firstNode = secondNode;
               }
-              firstNode = cycleNodes.nodes[0];
-              secondNode = cycleNodes.nodes[cycleNodes.nodes.length-1];
-              if (document.querySelector(`#edge-${firstNode}${secondNode}`)) {
-                document.querySelector(`#edge-${firstNode}${secondNode}`).style.stroke = 'red';
-                changeLink(tempGraph, firstNode, secondNode, 'red');
-              }
-              if (document.querySelector(`#edge-${secondNode}${firstNode}`)) {
-                document.querySelector(`#edge-${secondNode}${firstNode}`).style.stroke = 'red';
-                changeLink(tempGraph, secondNode, firstNode, 'red');
-              }
+              
               recordSteps(finalGraph, stepNumber++, tempGraph);
               setOutput(prevState => ({
                 ...prevState,
