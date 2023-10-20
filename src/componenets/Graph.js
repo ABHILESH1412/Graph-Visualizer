@@ -65,6 +65,8 @@ export default function Graph(props) {
         return 'edge-' + d.source.id + d.target.id;
       })
 
+    let weights;
+
     // for curved edges
     // const links = cvs
     //   .append('g')
@@ -85,10 +87,10 @@ export default function Graph(props) {
     //     const targetY = d.target.y;
 
     //     return `M${sourceX},${sourceY} C${sourceX},${(sourceY + targetY) / 2} ${targetX},${(sourceY + targetY) / 2} ${targetX},${targetY}`;
-    //   });
+      // });
   
 
-    if(props.graphType === 'directedGraph'){
+    if(props.graphType === 'directedGraph' || props.graphType === 'directedWeightedGraph'){
       // // Pointing Arrows
       // cvs.append('defs')
       //   .append('marker')
@@ -126,7 +128,26 @@ export default function Graph(props) {
         });
     }
 
-    //Nodes of the Graph
+    if(props.graphType === 'undirectedWeightedGraph' || props.graphType === 'directedWeightedGraph'){
+      weights = cvs.append('g')
+        .selectAll('text')
+        .data(props.graph.links)
+        .enter()
+        .append('text')
+        .text(d => d.weight)
+        .style('font-weight', 'bold')
+        .attr('fill', 'white')
+        .attr('stroke', 'black')
+        .attr('text-anchor', 'middle')
+        .attr('dy', 10)
+        .attr('cursor', 'default')
+        .attr('class', 'ft-sz-4')
+        .attr('id', (d) => {
+          return 'edge-weight-' + d.id;
+        })
+    }
+
+      //Nodes of the Graph
     let nodes = cvs
       .append('g')
       .selectAll('circle')
@@ -138,9 +159,9 @@ export default function Graph(props) {
       .attr('id', (d) => {
         return 'node-' + d.id;
       });
-
-    nodes.call(drag);
-    
+  
+      nodes.call(drag);
+      
     //this code is written by THREE
     //Numbering on the Nodes
     let texts = cvs.append('g')
@@ -165,6 +186,7 @@ export default function Graph(props) {
     function ticked() {
       texts.attr('x', d => d.x);
       texts.attr('y', d => d.y);
+      
       nodes
         .attr('cx', function (d) {
           return d.x;
@@ -186,6 +208,12 @@ export default function Graph(props) {
         .attr('y2', (d) => {
           return d.target.y;
         })
+
+      if(props.graphType === 'undirectedWeightedGraph' || props.graphType === 'directedWeightedGraph'){
+        weights
+          .attr('x', d => (d.source.x + d.target.x) / 2)
+          .attr('y', d => (d.source.y + d.target.y) / 2);
+      }
 
       //for curved path
       // links.attr('d', (d) => {
@@ -211,6 +239,9 @@ export default function Graph(props) {
         nodes.attr('transform', event.transform);
         links.attr('transform', event.transform);
         texts.attr('transform', event.transform);
+        if(props.graphType === 'undirectedWeightedGraph' || props.graphType === 'directedWeightedGraph'){
+          weights.attr('transform', event.transform);
+        }
       });
 
     cvs.call(zoom);

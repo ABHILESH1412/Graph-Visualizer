@@ -10,6 +10,10 @@
   font-size: 2.4rem;
 }
 
+.ft-sz-4{
+  font-size: 3rem;
+}
+
 .primary-btn{
   font-size: 2rem;
   padding: 1rem;
@@ -80,4 +84,8 @@
 
 .black-bg{
   background-color: black;
+}
+
+.outline-black{
+  outline: black;
 }

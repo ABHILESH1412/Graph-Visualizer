@@ -1,6 +1,7 @@
 import React, {useState, useRef} from 'react';
 import {algorithms} from '../algorithms/algorithms.js';
 
+import { uanddg, uanddwg, graphValueInput } from '../const/const';
 import './Sidebar.css';
 
 import githubImg from '../assets/github.png';
@@ -27,20 +28,18 @@ export default function Sidebar(props) {
   const [startingNode, setStartingNode] = useState(0);
   const [animationSpeedBtn, setAnimationSpeedBtn] = useState(1);
   const [speed, setSpeed] = useState(1000);
-  const userInputPlaceholder = `Total Nodes, Total Edges
-links:
-Source Node - Target Node
-----------------
-Example: 
-7 5
-1 2
-3 5
-4 2
-5 1
-3 1`;
+  const [userInputPlaceholder, setUserInputPlaceholder] = useState(graphValueInput.uanddg);
   const algoSimSelectRef = useRef();
 
   const graphTypeChange = (event) => {
+    console.log('graphtypechange', event.target.value);
+    if(event.target.value === 'undirectedGraph' || event.target.value === 'directedGraph'){
+      props.setGraph(uanddg);
+      setUserInputPlaceholder(graphValueInput.uanddg);
+    }else{
+      props.setGraph(uanddwg);
+      setUserInputPlaceholder(graphValueInput.uanddwg);
+    }
     props.setGraphType(event.target.value);
     props.setAlgoSimulation('none');
     algoSimSelectRef.current.value = 'none';
@@ -158,7 +157,12 @@ Example:
     for(let j = 0; j < totalEdges || i.value < cleanedString.length; j++){
       let source = helper(i, cleanedString);
       let target = helper(i, cleanedString);
-      if(isNaN(source) || isNaN(target) || source >= totalNodes+Number(nodesIndexing) || source < nodesIndexing || target >= totalNodes+Number(nodesIndexing) || target < nodesIndexing){
+      let weight;
+      if(props.graphType === 'undirectedWeightedGraph' || props.graphType === 'directedWeightedGraph'){
+        weight = helper(i, cleanedString);
+      }
+
+      if(isNaN(source) || isNaN(target) || ((props.graphType === 'undirectedWeightedGraph' || props.graphType === 'directedWeightedGraph') && isNaN(weight)) || source >= totalNodes+Number(nodesIndexing) || source < nodesIndexing || target >= totalNodes+Number(nodesIndexing) || target < nodesIndexing){
         setError(prevState => ({
           ...prevState,
           textArea1: {
@@ -168,7 +172,12 @@ Example:
         }));
         return;
       }
-      graphData.links.push({source: source, target: target})
+
+      if(props.graphType === 'undirectedWeightedGraph' || props.graphType === 'directedWeightedGraph'){
+        graphData.links.push({source: source, target: target, weight: weight});
+      }else{
+        graphData.links.push({source: source, target: target});
+      }
     }
 
     if(graphData.links.length !== totalEdges){
@@ -286,6 +295,8 @@ Example:
         <select name="graphType" className = {'select ' + (disableFunctions && 'disabled-cursor')} onChange={graphTypeChange} disabled={disableFunctions}>
           <option value="undirectedGraph">Undirected Graph</option>
           <option value="directedGraph">Directed Graph</option>
+          <option value="undirectedWeightedGraph">Undirected Weighted Graph</option>
+          <option value="directedWeightedGraph">Directed Weighted Graph</option>
         </select>
 
         <p className='white-color ft-sz-1'>Nodes Indexing: </p>

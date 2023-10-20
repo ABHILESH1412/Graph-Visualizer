@@ -138,6 +138,46 @@ function changeNode(tempGraph, currNode, color){
   });
 }
 
+function merge(arr, left, mid, right){
+  let tempArr = new Array(right-left+1);
+  let idx = 0, i = left, j = mid+1;
+  
+  while(i <= mid && j <= right){
+    if(arr[i].second <= arr[j].second){
+      tempArr[idx++] = arr[i++];
+    }else{
+      tempArr[idx++] = arr[j++];
+    }
+  }
+
+  while(i <= mid){
+    tempArr[idx++] = arr[i++];
+  }
+  while(j <= right){
+    tempArr[idx++] = arr[j++];
+  }
+
+  idx = 0;
+  for(i = left; i <= right; i++){
+    arr[i] = tempArr[idx++];
+  }
+
+  return;
+}
+
+function mergeSort(arr, left, right){
+  if(left >= right){
+    return;
+  }
+
+  let mid = Math.floor((left+right)/2);
+  mergeSort(arr, left, mid);
+  mergeSort(arr, mid+1, right);
+
+  merge(arr, left, mid, right);
+  return;
+}
+
 export function algorithms(graphType, algoSimulation, data, nodesIndexing, startingNode, setDisableFunctions, speed, setOutput, setSteps) {
   const circles = document.querySelectorAll('svg circle');
   circles.forEach(circle => {
@@ -513,7 +553,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       //this code is written by THREE
       performDFS();
     }
-  }else{
+  }else if(graphType === 'directedGraph') {
     // Making Adjecency List
     for(let i = 0; i < data.links.length; i++){
       const sourceId = parseInt(data.links[i].source.id);
@@ -813,5 +853,149 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       //this code is written by THREE
       performDFS();
     }
+  }else if(graphType === 'undirectedWeightedGraph'){
+    // Making Adjecency List
+    for(let i = 0; i < data.links.length; i++){
+      const sourceId = parseInt(data.links[i].source.id);
+      const targetId = parseInt(data.links[i].target.id);
+      const weight = parseInt(data.links[i].weight);
+      adj[sourceId].push(new Pair(targetId, weight));
+      adj[targetId].push(new Pair(sourceId, weight));
+    }
+    // setDisableFunctions(false);
+
+    async function dfsHelper(node, prev, DFSOrder){
+      if(vis[node] === true){
+        return;
+      }
+
+      if(prev !== -1){
+        await new Promise(resolve => setTimeout(resolve, speed));
+      }
+      vis[node] = true;
+      if (document.querySelector(`#edge-${prev}${node}`)) {
+        document.querySelector(`#edge-${prev}${node}`).style.stroke = lineColor;
+        changeLink(tempGraph, prev, node, lineColor);
+      }
+      if (document.querySelector(`#edge-${node}${prev}`)) {
+        document.querySelector(`#edge-${node}${prev}`).style.stroke = lineColor;
+        changeLink(tempGraph, node, prev, lineColor);
+      }
+      document.querySelector(`#node-${node}`).style.fill = nodeColor;
+      changeNode(tempGraph, node, nodeColor);
+      recordSteps(finalGraph, stepNumber++, tempGraph);
+      DFSOrder.order += `${node} `;
+      setOutput(prevState => ({
+        ...prevState,
+        result: DFSOrder.order
+      }));
+
+      let tempArr = new Array(adj[node].length);
+      for(let i = 0; i < adj[node].length; i++){
+        tempArr[i] = adj[node][i];
+      }
+      mergeSort(tempArr, 0, tempArr.length-1);
+
+      for(let i = 0; i < adj[node].length; i++){
+        await dfsHelper(tempArr[i].first, node, DFSOrder);
+      }
+    }
+
+    async function bfsHelper(node) {
+      let BFSOrder = '';
+      const q = new Queue();
+      q.enqueue(new Pair(node, -1));
+      vis[node] = true;
+
+      while (!q.isEmpty()) {
+        const frontNode = q.front().first;
+        // console.log(q.front().first);
+        
+        if (document.querySelector(`#edge-${q.front().second}${frontNode}`)) {
+          document.querySelector(`#edge-${q.front().second}${frontNode}`).style.stroke = lineColor;
+          changeLink(tempGraph, q.front().second, frontNode, lineColor);
+        }
+        if (document.querySelector(`#edge-${frontNode}${q.front().second}`)) {
+          document.querySelector(`#edge-${frontNode}${q.front().second}`).style.stroke = lineColor;
+          changeLink(tempGraph, frontNode, q.front().second, lineColor);
+        }
+        document.querySelector(`#node-${frontNode}`).style.fill = nodeColor;
+        changeNode(tempGraph, frontNode, nodeColor);
+        tempGraph.nodes = tempGraph.nodes.map((node) => {
+          if(node.id == frontNode){
+            node = {
+              ...node,
+              color: nodeColor
+            }
+          }
+
+          return node;
+        })
+        recordSteps(finalGraph, stepNumber++, tempGraph);
+        BFSOrder += `${frontNode} `;
+        setOutput(prevState => ({
+          ...prevState,
+          result: BFSOrder
+        }));
+        //this code is written by THREE
+
+        let tempArr = new Array(adj[frontNode].length);
+        for(let i = 0; i < adj[frontNode].length; i++){
+          tempArr[i] = adj[frontNode][i];
+        }
+        mergeSort(tempArr, 0, tempArr.length-1);
+  
+        for (let i = 0; i < adj[frontNode].length; i++) {
+          if (vis[tempArr[i].first] === false) {
+            q.enqueue(new Pair(tempArr[i].first, frontNode));
+            vis[tempArr[i].first] = true; 
+          }
+        }
+  
+        q.dequeue();
+        await new Promise(resolve => setTimeout(resolve, speed));
+      }
+    }
+
+    if(algoSimulation === 'dfs'){
+      setOutput(prevState => ({
+        ...prevState,
+        heading: 'One of the DFS Order:'
+      }));
+      async function performDFS() {
+        let DFSOrder = {
+          order: ''
+        };
+        await dfsHelper(startingNode, -1, DFSOrder);
+        // for (let i = nodesIndexing; i < size; i++) {
+        //   if (vis[i] === false) {
+        //     await dfsHelper(i, -1); // Use await to wait for the completion of dfsHelper
+        //   }
+        // }
+        setDisableFunctions(false);
+        setSteps(finalGraph);
+      }
+      //this code is written by THREE
+      performDFS(); // Start DFS traversal
+    }else if(algoSimulation === 'bfs'){
+      setOutput(prevState => ({
+        ...prevState,
+        heading: 'One of the BFS Order:'
+      }));
+      async function performBFS() {
+        await bfsHelper(startingNode);
+        // for (let i = nodesIndexing; i < size; i++) {
+        //   if (vis[i] === false) {
+        //     await bfsHelper(i); // Use await to wait for the completion of bfsHelper
+        //   }
+        // }
+        setDisableFunctions(false);
+        setSteps(finalGraph);
+      }
+    
+      performBFS(); // Start BFS traversal
+    }
+    // console.log(adj);
+    
   }
 }

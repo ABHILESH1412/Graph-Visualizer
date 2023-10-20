@@ -3,57 +3,13 @@ import React, { useState, useEffect } from 'react';
 import Graph from './componenets/Graph';
 import Sidebar from './componenets/Sidebar';
 
+import { uanddg, uanddwg } from './const/const';
+
 import './App.css';
 import './utility.css'
 
 function App() {
-  const [graph, setGraph] = useState({
-    nodes: [
-      {
-        id: 0,
-      },
-      {
-        id: 1,
-      },
-      {
-        id: 2,
-      },
-      {
-        id: 3,
-      },
-      {
-        id: 4,
-      },
-      {
-        id: 5,
-      },
-      {
-        id: 6,
-      },
-    ],
-    links: [
-      {
-        source: 1,
-        target: 2
-      },
-      {
-        source: 3,
-        target: 5
-      },
-      {
-        source: 4,
-        target: 2
-      },
-      {
-        source: 5,
-        target: 1
-      },
-      {
-        source: 3,
-        target: 1
-      },
-    ]
-  });
+  const [graph, setGraph] = useState(uanddg);
   const [steps, setSteps] = useState({});
   const [count, setCount] = useState(1);
   const [graphType, setGraphType] = useState('undirectedGraph');
@@ -92,7 +48,7 @@ function App() {
   }
 
   const temp = () => {
-    console.log(steps);
+    console.log(graph);
   }
 
   useEffect(() => {
@@ -102,12 +58,12 @@ function App() {
   return (
     <div className="App">
       <Sidebar graph = {graph} setGraph = {setGraph} graphType = {graphType} setGraphType = {setGraphType} algoSimulation = {algoSimulation} setAlgoSimulation = {setAlgoSimulation} setOutput = {setOutput} steps = {steps} setSteps = {setSteps}/>
+      {/* <button className='primary-btn ft-sz-1' onClick={temp}>Click Me</button> */}
       <Graph graph = {graph} graphType = {graphType}/>
       {algoSimulation !== 'none' && <div className = 'output'> 
         <div className = "output-heading">
           <p>Output</p>
         </div>
-        {/* <button className='primary-btn ft-sz-1' onClick={temp}>Click Me</button> */}
         {Object.keys(steps).length > 0 && <>
           <p className='output-heading1 ft-sz-2 white-color'>Algorithm Steps: </p>
           <br />
