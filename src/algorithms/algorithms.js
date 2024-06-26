@@ -499,7 +499,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
 
       for(let i = 0; i < adj[node].length; i++){
         //If the current node is th prev node
-        if(prev === adj[node][i]){
+        if(prev == adj[node][i]){
           continue;
         }
 
@@ -854,6 +854,7 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
       }
       document.querySelector(`#node-${node}`).style.fill = nodeColor;
       changeNode(tempGraph, node, nodeColor);
+
       recordSteps(finalGraph, stepNumber++, tempGraph);
       DFSOrder.order += `${node} `;
       setOutput(prevState => ({
@@ -995,11 +996,6 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
           order: ''
         };
         await dfsHelper(startingNode, -1, DFSOrder);
-        // for (let i = nodesIndexing; i < size; i++) {
-        //   if (vis[i] === false) {
-        //     await dfsHelper(i, -1); // Use await to wait for the completion of dfsHelper
-        //   }
-        // }
         setDisableFunctions(false);
         setSteps(finalGraph);
       }
@@ -1748,15 +1744,13 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
         document.querySelector(`#edge-${prev}${node}`).style.stroke = lineColor;
         changeLink(tempGraph, prev, node, lineColor);
       }
-      if (document.querySelector(`#edge-${node}${prev}`)) {
-        document.querySelector(`#edge-${node}${prev}`).style.stroke = lineColor;
-        changeLink(tempGraph, node, prev, lineColor);
-      }
+
       if (document.getElementById(`arrow-${prev}${node}`)){
-        document.getElementById(`arrow-${prev}${node}`).style.fill = 'white';
+        document.getElementById(`arrow-${prev}${node}`).style.fill = lineColor;
       }
       document.querySelector(`#node-${node}`).style.fill = nodeColor;
       changeNode(tempGraph, node, nodeColor);
+      
       recordSteps(finalGraph, stepNumber++, tempGraph);
       DFSOrder.order += `${node} `;
       setOutput(prevState => ({
