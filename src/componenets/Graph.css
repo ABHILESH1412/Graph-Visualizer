@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,500;0,700;0,900;1,500;1,700;1,900&display=swap');
+
 .graphContainer{
   /* border: 1rem solid red; */
   width: 100%;
@@ -5,6 +7,7 @@
   display: flex;
   align-items: center;
   margin: 1rem;
+  position: relative;
 }
 
 .svgRef{
@@ -12,4 +15,24 @@
   height: 96%;
   border-radius: 2rem;
   background-color: rgba(148, 148, 148, 0.438);
+}
+
+.graphContainer .header{
+  position: absolute;
+  display: flex;
+  flex-direction: row-reverse;
+  bottom: 90%;
+  width: 97%;
+}
+
+.download-btn{
+  background-color: transparent;
+  /* border: 0.1rem soid red; */
+  border: none;
+  cursor: pointer;
+  height: 4rem;
+  width: 4rem;
+}
+.download-btn img{
+  width: 100%;
 }

@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 
 import './Graph.css';
+import download_icon from '../assets/download_icon.svg';
 
 export default function Graph(props) {
   const svgRef = useRef();
@@ -11,7 +12,34 @@ export default function Graph(props) {
   const edgeWidth = 6;
   const edgeDistance = 250;
   const forceStrength = -10;
-  const collideForce = nodeRadius+10;
+  const collideForce = nodeRadius+20;
+
+  const downloadSVG = () => {
+    const svgElement = svgRef.current.cloneNode(true); // Clone the SVG element
+
+    // Modify text elements' font and font-weight in the cloned SVG
+    d3.select(svgElement)
+      .selectAll('text')
+      .style('font-family', 'Arial') 
+      .style('font-weight', 'bold') 
+      .style('font-size', '1.5rem');
+
+    // Serialize SVG to XML
+    const svgData = new XMLSerializer().serializeToString(svgElement);
+
+    // Create a Blob object to download
+    const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary link element and trigger download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'graph.svg'; // File name
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 
   //Function which will draw the graph on the SVG Canvas
   const draw = async () => {
@@ -254,6 +282,10 @@ export default function Graph(props) {
   return (
     <div className='graphContainer'>
       <svg ref={svgRef} className='svgRef'></svg>
+      <div className='header'>
+
+        <button onClick={downloadSVG } className='download-btn' title='Download Graph'><img src={download_icon} /></button>
+      </div>
     </div>
   )
 }

@@ -321,7 +321,7 @@ export default function Sidebar(props) {
         
         {error.textArea1.currVal !== 0 && <p className='sidebarWar ft-sz-1'>* {error.textArea1[error.textArea1.currVal]}</p>}
 
-        <button className = {disableFunctions ? 'btn-disabled' : 'primary-btn'} onClick={plotGraphBtn} title='ctrl+enter' disabled={disableFunctions}>Plot Graph</button>
+        <button className = {disableFunctions ? 'btn-disabled' : 'primary-btn'} onClick={plotGraphBtn} title='ctrl+enter' disabled={disableFunctions}>Visualize</button>
 
         <select ref={algoSimSelectRef} name="algoSimulation" className = {'select ' + (disableFunctions && 'disabled-cursor')} onChange={algoSimulationChange} disabled={disableFunctions}>
           <option value="none">Algorithm Simulation</option>
