@@ -2111,10 +2111,11 @@ export function algorithms(graphType, algoSimulation, data, nodesIndexing, start
             heading: `No path between ${startingNode} to ${destNode}.`
           }));
         }else{
+
           let idx = destNode;
           let s = '';
           let path = [];
-          while(parentArray[idx] !== idx){
+          while(parentArray[idx] != idx){
             if (document.querySelector(`#edge-${parentArray[idx]}${idx}`)) {
               document.querySelector(`#edge-${parentArray[idx]}${idx}`).style.stroke = 'blue';
               changeLink(tempGraph, parentArray[idx], idx, 'blue');
