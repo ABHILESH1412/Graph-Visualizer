@@ -15,8 +15,10 @@ function App() {
   const [graphType, setGraphType] = useState('undirectedGraph');
   const [algoSimulation, setAlgoSimulation] = useState('none');
   const [output, setOutput] = useState({
+    note: '',
     heading: '',
-    result: ''
+    result: '',
+    table: null
   });
 
   function showStep(step) {
@@ -47,9 +49,9 @@ function App() {
     }
   }
 
-  const temp = () => {
-    console.log(graph);
-  }
+  // const temp = () => {
+  //   console.log(graph);
+  // }
 
   useEffect(() => {
     setCount(Object.keys(steps).length);
@@ -68,19 +70,51 @@ function App() {
           <p className='output-heading1 ft-sz-2 white-color'>Algorithm Steps: </p>
           <br />
           <div className="steps">
-            <button className={`${count == 1 ? 'step-btn-disabled ' : 'step-btn '} ft-sz-1`} onClick={() => {if(count > 1){showStep(count-1); setCount(Number(count)-1);}}}>Prev</button>
+            <button className={`${count === 1 ? 'step-btn-disabled ' : 'step-btn '} ft-sz-1`} onClick={() => {if(count > 1){showStep(count-1); setCount(Number(count)-1);}}}>Prev</button>
             <div className='step-show'>
               <input type="number" value={count} onChange={(event) => setCount(event.target.value)} onKeyDown = {detectEnter} className='ft-sz-1' />
               <p className='ft-sz-2 white-color'>/ {`${Object.keys(steps).length}`}</p>
             </div>
-            <button className={`${count == Object.keys(steps).length ? 'step-btn-disabled ' : 'step-btn '} ft-sz-1`} onClick={() => {if(count < Object.keys(steps).length){showStep(Number(count)+1); setCount(Number(count)+1);}}}>Next</button>
+            <button className={`${count === Object.keys(steps).length ? 'step-btn-disabled ' : 'step-btn '} ft-sz-1`} onClick={() => {if(count < Object.keys(steps).length){showStep(Number(count)+1); setCount(Number(count)+1);}}}>Next</button>
           </div>
         </>}
         <br />
         <br />
+        {output.note !== '' && <div className='output-note'>
+          <p className='output-heading1 red-color ft-sz-2'>Note</p>
+          <br />
+          <p className='note white-color ft-sz-1' style={{ whiteSpace: 'pre-line' }}>{output.note}</p>
+        </div>}
+        <br />
+        <br />
         <p className = 'output-heading1 white-color ft-sz-2'>{output.heading}</p>
         <br />
-        <p className = 'white-color ft-sz-1'>{output.result}</p>
+        <pre className = 'white-color ft-sz-1' style={{ whiteSpace: 'pre-line' }}>{output.result}</pre>
+        <br/>
+        {output.table && <div className='table white-color'>
+          <table>
+            <thead>
+              <tr>
+                <th className='ft-sz-1'> Nodes </th>
+                <th className='ft-sz-1'> Distance </th>
+              </tr>
+            </thead>
+            <tbody>
+              {output.table.dist.map((value, index) => {
+                if(output.table.nodesIndexing == 1 && index == 0){
+                  return null;
+                }
+
+                return (
+                  <tr key={index} className='grey-row'>
+                    <td className='ft-sz-1'>{index}</td>
+                    <td className='ft-sz-1'>{value}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>}
       </div>}
     </div>
   );
@@ -103,3 +137,35 @@ export default App;
 // 5 1
 // 1 2
 // 2 4
+
+// 9 14
+// 0 1 4
+// 0 7 8
+// 1 2 8
+// 1 7 11
+// 2 3 7
+// 2 8 2
+// 2 5 4
+// 3 4 9
+// 3 5 14
+// 4 5 10
+// 5 6 2
+// 6 7 1
+// 6 8 6
+// 7 8 7
+
+// 9 14
+// 0 1
+// 0 7
+// 1 2
+// 1 7
+// 2 3
+// 2 8
+// 2 5
+// 3 4
+// 3 5
+// 4 5
+// 5 6
+// 6 7
+// 6 8
+// 7 8

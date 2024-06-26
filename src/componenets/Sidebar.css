@@ -112,3 +112,8 @@
 .scrollable-div::-webkit-scrollbar {
   display: none; /* This hides the scrollbar for Webkit-based browsers */
 }
+
+.st-des-container{
+  display: flex;
+  justify-content: space-between;
+}

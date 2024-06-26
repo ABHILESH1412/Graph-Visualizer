@@ -1,4 +1,5 @@
-
+// uanddg = undirected and directed graph
+// uanddwg = undirected and directed weighted graph
 export const uanddg = {
   nodes: [
     {
@@ -112,12 +113,12 @@ Example:
 4 2
 5 1
 3 1`,
-  uanddwg: `Total Nodes, Total Edges, Weights
+  uanddwg: `Total Nodes, Total Edges
 links:
-Source Node - Target Node
+Source Node - Target Node - Weight
 ----------------
 Example: 
-7 5 1
+7 5 
 1 2 1
 3 5 1
 4 2 1

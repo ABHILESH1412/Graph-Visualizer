@@ -12,6 +12,7 @@
   /* border: 0.1rem solid red; */
   margin-right: 2rem;
   min-width: 32rem;
+  max-width: 32rem;
   /* padding: 1rem; */
   height: 95%;
 }
@@ -89,3 +90,34 @@
   cursor: not-allowed;
   margin: 1rem 0;
 }
+
+.output-note{
+  /* border: 0.2rem solid red; */
+  background-color: rgba(148, 148, 148, 0.438);
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.table table{
+  width: 100%;
+  table-layout: fixed;
+  border-radius: 1rem;
+  overflow: hidden;
+  /* border: 0.1rem solid white; */
+  border-collapse: collapse;
+}
+.table th, .table td{
+  padding: 0.5rem;
+  text-align: center;
+  /* border: 0.1rem solid white; */
+}
+.table th{
+  background-color: rgb(30, 102, 217);
+}
+.black-row{
+  background-color: black;
+}
+.grey-row{
+  background-color: rgba(148, 148, 148, 0.438);
+}
+

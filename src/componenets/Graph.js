@@ -10,8 +10,8 @@ export default function Graph(props) {
   const edgeColor = 'orange';
   const edgeWidth = 6;
   const edgeDistance = 250;
-  const forceStrength = -30;
-  const collideForce = nodeRadius+5;
+  const forceStrength = -10;
+  const collideForce = nodeRadius+10;
 
   //Function which will draw the graph on the SVG Canvas
   const draw = async () => {

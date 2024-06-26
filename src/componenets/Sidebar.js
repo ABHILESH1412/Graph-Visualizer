@@ -26,10 +26,21 @@ export default function Sidebar(props) {
   const [nodesIndexing, setNodesIndexing] = useState(0);
   const [disableFunctions, setDisableFunctions] = useState(false);
   const [startingNode, setStartingNode] = useState(0);
-  const [animationSpeedBtn, setAnimationSpeedBtn] = useState(1);
+  const [destNode, setDestNode] = useState(0);
+  const [animationSpeedBtn, setAnimationSpeedBtn] = useState(2);
   const [speed, setSpeed] = useState(1000);
   const [userInputPlaceholder, setUserInputPlaceholder] = useState(graphValueInput.uanddg);
   const algoSimSelectRef = useRef();
+
+  function setDefaultValues(){
+    props.setOutput({
+      note: '',
+      heading: '',
+      result: '',
+      table: null
+    });
+    props.setSteps({});
+  }
 
   const graphTypeChange = (event) => {
     console.log('graphtypechange', event.target.value);
@@ -43,21 +54,14 @@ export default function Sidebar(props) {
     props.setGraphType(event.target.value);
     props.setAlgoSimulation('none');
     algoSimSelectRef.current.value = 'none';
-    props.setOutput({
-      heading: '',
-      result: ''
-    })
-    props.setSteps({});
+    setDefaultValues();
   }
 
   const nodesIndexingChange = (event) => {
     setNodesIndexing(event.target.value);
     setStartingNode(event.target.value);
-    props.setOutput({
-      heading: '',
-      result: ''
-    })
-    props.setSteps({});
+    setDestNode(event.target.value);
+    setDefaultValues();
   }
 
   const userInput = (event) => {
@@ -105,7 +109,6 @@ export default function Sidebar(props) {
     return parseInt(s);
   }
 
-  //this code is written by THREE
 
   const plotGraphBtn = () => {
     //removing unnecessary spaces and new lines.
@@ -189,11 +192,7 @@ export default function Sidebar(props) {
         }
       }));
     }else{
-      props.setOutput({
-        heading: '',
-        result: ''
-      })
-      props.setSteps({});
+      setDefaultValues();
       props.setGraph(graphData);
       setError(prevState => ({
         ...prevState,
@@ -208,10 +207,13 @@ export default function Sidebar(props) {
   const algoSimulationChange = (event) => {
     props.setAlgoSimulation(event.target.value);
     setStartingNode(nodesIndexing);
+    setDestNode(nodesIndexing);
+
+    setDefaultValues();
   }
 
   const algoSimulationRunBtn = () => {
-    if(startingNode === '' || startingNode < nodesIndexing || startingNode >= props.graph.nodes.length){
+    if(startingNode === '' || startingNode < nodesIndexing || (nodesIndexing === 0 && startingNode >= props.graph.nodes.length) || (nodesIndexing === 1 && startingNode > props.graph.nodes.length)){
       setError(prevState => ({
         ...prevState,
         textArea2: {
@@ -223,20 +225,26 @@ export default function Sidebar(props) {
       return;
     }
     setDisableFunctions(true);
-    props.setOutput({
-      heading: '',
-      result: ''
-    });
-    props.setSteps({});
-    algorithms(props.graphType, props.algoSimulation, props.graph, nodesIndexing, startingNode, setDisableFunctions, speed, props.setOutput, props.setSteps);
+    setDefaultValues();
+    // console.log(`Starting Node : ${startingNode}, Destination Node : ${destNode}`);
+    // console.log(typeof(props.graph.nodes.length));
+    algorithms(props.graphType, props.algoSimulation, props.graph, nodesIndexing, startingNode, destNode, setDisableFunctions, speed, props.setOutput, props.setSteps);
   }
 
-  const startingNodeChange = (event) => {
+  const nodeChange = (event, nodeChangeFun) => {
     let flag = true;
+    let tempNode = event.target.value;
     for(let i = 0; i < event.target.value.length; i++){
       if(!((event.target.value[i] >= '0' && event.target.value[i] <= '9'))){
         flag = false;
 
+        if(event.target.value[i] === '\n'){
+          tempNode = event.target.value.slice(0, -1);
+          flag = true;
+          break;
+        }
+        
+        // setStartingNode(startingNode);
         setError(prevState => ({
           ...prevState,
           textArea2: {
@@ -250,7 +258,7 @@ export default function Sidebar(props) {
     }
 
     if(flag){
-      setStartingNode(event.target.value);
+      nodeChangeFun(tempNode);
       setError(prevState => ({
         ...prevState,
         textArea2: {
@@ -262,14 +270,17 @@ export default function Sidebar(props) {
   }
 
   const speedBtnClicked = (event) => {
-    if(event.target.innerText === 'Slow'){
+    if(event.target.innerText === 'Off'){
       setAnimationSpeedBtn(0);
+      setSpeed(0);
+    }else if(event.target.innerText === 'Slow'){
+      setAnimationSpeedBtn(1);
       setSpeed(1500);
     }else if(event.target.innerText === 'Normal'){
-      setAnimationSpeedBtn(1);
+      setAnimationSpeedBtn(2);
       setSpeed(1000);
     }else if(event.target.innerText === 'Fast'){
-      setAnimationSpeedBtn(2);
+      setAnimationSpeedBtn(3);
       setSpeed(500);
     }
   }
@@ -317,23 +328,37 @@ export default function Sidebar(props) {
           <option value="dfs">Depth First Search (DFS)</option>
           <option value="bfs">Breadth First Search (BFS)</option>
           <option value="detectCycle">Detect Cycle</option>
-          <option value='bipartiteGraph' disabled = {props.graphType === 'directedGraph' ? true : false}>Bipartite Graph {props.graphType === 'directedGraph' ? '(only for Undirected Graph)' : ''}</option>
-          <option value='topoSort' disabled = {props.graphType === 'undirectedGraph' ? true : false}>Topological Sort {props.graphType === 'undirectedGraph' ? '(only for Directed Graph)' : ''}</option>
+          <option value="shortestPath">Shortest Path</option>
+          {(props.graphType === "undirectedWeightedGraph" || props.graphType === "directedWeightedGraph") && <option value="dijkstraAlgo">Dijktra's Algorithm</option>}
+          {(props.graphType === "undirectedGraph" || props.graphType === "undirectedWeightedGraph") && <option value='bipartiteGraph'>Bipartite Graph</option>}
+          {props.graphType === "directedGraph" && <option value='topoSort'>Topological Sort</option>}
         </select>
 
-        {props.algoSimulation !== 'none' && (props.algoSimulation === 'bfs' || props.algoSimulation === 'dfs') && <>
+        {props.algoSimulation !== 'none' && (props.algoSimulation === 'bfs' || props.algoSimulation === 'dfs' || props.algoSimulation === 'dijkstraAlgo') && <>
           <p className='white-color ft-sz-1'>Starting Node:</p>
-          <textarea name="startingNode" cols="30" rows="1" className = {'text-area text-area-h2 center-text ' + (disableFunctions && 'disabled-cursor')} disabled={disableFunctions} value = {startingNode} onChange={startingNodeChange}></textarea>
+          <textarea name="startingNode" cols="30" rows="1" className = {'text-area text-area-h2 center-text ' + (disableFunctions && 'disabled-cursor')} disabled={disableFunctions} value = {startingNode} onChange={(event) => nodeChange(event, setStartingNode)}></textarea>
         </>}
+        
+        {props.algoSimulation !== 'none' && props.algoSimulation === 'shortestPath' && <div className='st-des-container'>
+          <div>
+            <p className='white-color ft-sz-1'>Starting Node:</p>
+            <textarea name="startingNode" cols="11" rows="1" className = {'text-area text-area-h2 center-text ' + (disableFunctions && 'disabled-cursor')} disabled={disableFunctions} value = {startingNode} onChange={(event) => nodeChange(event, setStartingNode)}></textarea>
+          </div>
+          <div>
+            <p className='white-color ft-sz-1'>Destination Node:</p>
+            <textarea name="startingNode" cols="11" rows="1" className = {'text-area text-area-h2 center-text ' + (disableFunctions && 'disabled-cursor')} disabled={disableFunctions} value = {destNode} onChange={(event) => nodeChange(event, setDestNode)}></textarea>
+          </div>
+        </div>}
 
         {error.textArea2.currVal !== 0 && <p className='ft-sz-1 sidebarWar'>* {error.textArea2[error.textArea2.currVal]}</p>}
 
         {props.algoSimulation !== 'none' && <>
-          <p className='ft-sz-1 white-color'>Animation Speed:</p>
+          <p className='ft-sz-1 white-color'>Animation :</p>
           <div className="speedBtnsContainer">
-            <button className={`${disableFunctions ? 'speed-btn-disabled' : 'speed-btn'} ${animationSpeedBtn === 0 ? 'selected-btn' : ''}`} onClick={speedBtnClicked} disabled={disableFunctions}>Slow</button>
-            <button className={`${disableFunctions ? 'speed-btn-disabled' : 'speed-btn'} ${animationSpeedBtn === 1 ? 'selected-btn' : ''}`} onClick={speedBtnClicked} disabled={disableFunctions}>Normal</button>
-            <button className={`${disableFunctions ? 'speed-btn-disabled' : 'speed-btn'} ${animationSpeedBtn === 2 ? 'selected-btn' : ''}`} onClick={speedBtnClicked} disabled={disableFunctions}>Fast</button>
+            <button className={`${disableFunctions ? 'speed-btn-disabled' : 'speed-btn'} ${animationSpeedBtn === 0 ? 'selected-btn' : ''}`} onClick={speedBtnClicked} disabled={disableFunctions}>Off</button>
+            <button className={`${disableFunctions ? 'speed-btn-disabled' : 'speed-btn'} ${animationSpeedBtn === 1 ? 'selected-btn' : ''}`} onClick={speedBtnClicked} disabled={disableFunctions}>Slow</button>
+            <button className={`${disableFunctions ? 'speed-btn-disabled' : 'speed-btn'} ${animationSpeedBtn === 2 ? 'selected-btn' : ''}`} onClick={speedBtnClicked} disabled={disableFunctions}>Normal</button>
+            <button className={`${disableFunctions ? 'speed-btn-disabled' : 'speed-btn'} ${animationSpeedBtn === 3 ? 'selected-btn' : ''}`} onClick={speedBtnClicked} disabled={disableFunctions}>Fast</button>
             {/* this code is written by THREE */}
           </div>
           <button className = {disableFunctions ? 'btn-disabled' : 'primary-btn'} onClick={algoSimulationRunBtn} disabled={disableFunctions}>Run Simulation</button>
